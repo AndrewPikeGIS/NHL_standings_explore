@@ -83,16 +83,25 @@ year_vector <- c(
 
 
 ```{r clean_data, echo = FALSE, warning = FALSE, message = FALSE}
-clean_tables <- function(df_in, year) {
+clean_tables <- function(df_in, year_in) {
     df_out <- df_in %>%
         separate(Overall, c("wins", "losses", "ot_losses"), "-") %>%
-        mutate(year = year) %>%
+        separate(Shootout, c("so_wins", "so_losses"), "-") %>%
+        separate(Overtime, c("ot_wins", "ot_only_losses"), "-") %>%
+        mutate(
+            ot_wins = as.numeric(ot_wins) + as.numeric(so_wins),
+            wins = as.numeric(wins),
+            losses = as.numeric(losses),
+            ot_losses = as.numeric(ot_losses),
+            year = year_in
+        ) %>%
         select(
             Rk,
             Team,
             wins,
             losses,
             ot_losses,
+            ot_wins,
             year
         )
     return(df_out)
@@ -101,6 +110,9 @@ clean_tables <- function(df_in, year) {
 clean_2020_21 <- clean_tables(standings_2020_21, "2020-21")
 
 list_clean_standings <- mapply(clean_tables, list_standings, year_vector)
+
+test <- as_tibble(list_clean_standings[,  1])
+View(test)
 ```
 
 
@@ -108,5 +120,18 @@ list_clean_standings <- mapply(clean_tables, list_standings, year_vector)
 ## Apply points schemas
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
-names(list_standings)
+apply_point_system <- function(df_in) {
+    df_out <- df_in %>%
+        mutate(
+            points_2 = (2 * wins) + (1 * ot_losses),
+            points_3 = (3 * wins) + (2 * ot_wins) + (1 * ot_losses),
+            points_win_loss = wins
+        )
+    return(df_out)
+}
+
+points_2020_21 <- apply_point_system(clean_2020_21)
+View(points_2020_21)
+list_clean_standings <- mapply(list_clean_standings, apply_point_system)
+
 ```
