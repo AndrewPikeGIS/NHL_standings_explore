@@ -24,7 +24,7 @@ Example -> https://www.hockey-reference.com/leagues/NHL_2021_standings.html
 
 ```{r load_tables, echo = FALSE, warning = FALSE, message = FALSE}
 standings_2020_21 <- read_csv("data/2020_21_standings.csv")
-standings_2019_21 <- read_csv("data/2019_20_standings.csv")
+standings_2019_20 <- read_csv("data/2019_20_standings.csv")
 standings_2018_19 <- read_csv("data/2018_19_standings.csv")
 standings_2017_18 <- read_csv("data/2017_18_standings.csv")
 standings_2016_17 <- read_csv("data/2016_17_standings.csv")
@@ -40,6 +40,44 @@ standings_2007_08 <- read_csv("data/2013_14_standings.csv")
 standings_2006_07 <- read_csv("data/2012_13_standings.csv")
 standings_2005_06 <- read_csv("data/2011_12_standings.csv")
 
+list_standings <- list(
+    standings_2020_21,
+    standings_2019_20,
+    standings_2018_19,
+    standings_2017_18,
+    standings_2016_17,
+    standings_2015_16,
+    standings_2014_15,
+    standings_2013_14,
+    standings_2012_13,
+    standings_2011_12,
+    standings_2010_11,
+    standings_2009_10,
+    standings_2008_09,
+    standings_2007_08,
+    standings_2006_07,
+    standings_2005_06
+)
+
+
+year_vector <- c(
+    "2020_21",
+    "2019_20",
+    "2018_19",
+    "2017_18",
+    "2016_17",
+    "2015_16",
+    "2014_15",
+    "2013_14",
+    "2012_13",
+    "2011_12",
+    "2010_11",
+    "2009_10",
+    "2008_09",
+    "2007_08",
+    "2006_07",
+    "2005_06"
+)
 ```
 
 
@@ -48,11 +86,27 @@ standings_2005_06 <- read_csv("data/2011_12_standings.csv")
 clean_tables <- function(df_in, year) {
     df_out <- df_in %>%
         separate(Overall, c("wins", "losses", "ot_losses"), "-") %>%
-        mutate(year = year)
+        mutate(year = year) %>%
+        select(
+            Rk,
+            Team,
+            wins,
+            losses,
+            ot_losses,
+            year
+        )
     return(df_out)
 }
 
 clean_2020_21 <- clean_tables(standings_2020_21, "2020-21")
 
+list_clean_standings <- mapply(clean_tables, list_standings, year_vector)
+```
 
+
+
+## Apply points schemas
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+names(list_standings)
 ```
