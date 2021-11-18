@@ -40,8 +40,6 @@ standings_2007_08 <- read_csv("data/2013_14_standings.csv")
 standings_2006_07 <- read_csv("data/2012_13_standings.csv")
 standings_2005_06 <- read_csv("data/2011_12_standings.csv")
 
-
-
 ```
 
 
@@ -49,9 +47,12 @@ standings_2005_06 <- read_csv("data/2011_12_standings.csv")
 ```{r clean_data, echo = FALSE, warning = FALSE, message = FALSE}
 clean_tables <- function(df_in, year) {
     df_out <- df_in %>%
-    separate(Overall, c("wins", "losses", "ot_losses"), "-") %>%
-    mutate(year = year)
+        separate(Overall, c("wins", "losses", "ot_losses"), "-") %>%
+        mutate(year = year)
+    return(df_out)
 }
+
+clean_2020_21 <- clean_tables(standings_2020_21, "2020-21")
 
 
 ```
