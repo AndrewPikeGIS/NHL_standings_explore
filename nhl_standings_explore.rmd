@@ -11,6 +11,8 @@ output: html_document
 library(readr)
 library(dplyr)
 library(tidyr)
+library(stringr)
+library(reshape2)
 
 print(.packages())
 
@@ -34,11 +36,11 @@ standings_2013_14 <- read_csv("data/2013_14_standings.csv")
 standings_2012_13 <- read_csv("data/2012_13_standings.csv")
 standings_2011_12 <- read_csv("data/2011_12_standings.csv")
 standings_2010_11 <- read_csv("data/2010_11_standings.csv")
-standings_2009_10 <- read_csv("data/2015_16_standings.csv")
-standings_2008_09 <- read_csv("data/2014_15_standings.csv")
-standings_2007_08 <- read_csv("data/2013_14_standings.csv")
-standings_2006_07 <- read_csv("data/2012_13_standings.csv")
-standings_2005_06 <- read_csv("data/2011_12_standings.csv")
+standings_2009_10 <- read_csv("data/2009_10_standings.csv")
+standings_2008_09 <- read_csv("data/2008_09_standings.csv")
+standings_2007_08 <- read_csv("data/2007_08_standings.csv")
+standings_2006_07 <- read_csv("data/2006_07_standings.csv")
+standings_2005_06 <- read_csv("data/2005_06_standings.csv")
 
 list_standings <- list(
     standings_2020_21,
@@ -59,31 +61,13 @@ list_standings <- list(
     standings_2005_06
 )
 
-
-year_vector <- c(
-    "2020_21",
-    "2019_20",
-    "2018_19",
-    "2017_18",
-    "2016_17",
-    "2015_16",
-    "2014_15",
-    "2013_14",
-    "2012_13",
-    "2011_12",
-    "2010_11",
-    "2009_10",
-    "2008_09",
-    "2007_08",
-    "2006_07",
-    "2005_06"
-)
+standings_merged <- bind_rows(list_standings, .id = "column_label")
 ```
 
 
-
+## Clean Standings Table
 ```{r clean_data, echo = FALSE, warning = FALSE, message = FALSE}
-clean_tables <- function(df_in, year_in) {
+clean_table <- function(df_in) {
     df_out <- df_in %>%
         separate(Overall, c("wins", "losses", "ot_losses"), "-") %>%
         separate(Shootout, c("so_wins", "so_losses"), "-") %>%
@@ -93,7 +77,24 @@ clean_tables <- function(df_in, year_in) {
             wins = as.numeric(wins),
             losses = as.numeric(losses),
             ot_losses = as.numeric(ot_losses),
-            year = year_in
+            year = case_when(
+                column_label == 1 ~ "20_21",
+                column_label == 2 ~ "19_20",
+                column_label == 3 ~ "18_19",
+                column_label == 4 ~ "17_18",
+                column_label == 5 ~ "16_17",
+                column_label == 6 ~ "15_16",
+                column_label == 7 ~ "14_15",
+                column_label == 8 ~ "13_14",
+                column_label == 9 ~ "12_13",
+                column_label == 10 ~ "11_12",
+                column_label == 11 ~ "10_11",
+                column_label == 12 ~ "09_10",
+                column_label == 13 ~ "08_09",
+                column_label == 14 ~ "07_08",
+                column_label == 15 ~ "06_07",
+                column_label == 16 ~ "05_06"
+            )
         ) %>%
         select(
             Rk,
@@ -107,14 +108,31 @@ clean_tables <- function(df_in, year_in) {
     return(df_out)
 }
 
-clean_2020_21 <- clean_tables(standings_2020_21, "2020-21")
-
-list_clean_standings <- mapply(clean_tables, list_standings, year_vector)
-
-test <- as_tibble(list_clean_standings[,  1])
-View(test)
+clean_standings_merged <- clean_table(standings_merged)
 ```
 
+## Clean division table
+```{r clean_division_table, echo = FALSE, warning = FALSE, message = FALSE}
+#quick division table clean up
+
+div_conf <- read_csv("data/conference_division_alignment.csv")
+
+div_conf_long <- div_conf %>%
+    pivot_longer(
+        !Team,
+        names_to = "div_conf",
+        values_to = "group"
+    )
+
+div_conf_split <- colsplit(
+    div_conf_long$div_conf,
+    "_",
+    c("group_level", "year")
+)
+
+div_conf_long <- cbind(div_conf_long, div_conf_split)
+
+```
 
 
 ## Apply points schemas
@@ -130,8 +148,29 @@ apply_point_system <- function(df_in) {
     return(df_out)
 }
 
-points_2020_21 <- apply_point_system(clean_2020_21)
-View(points_2020_21)
-list_clean_standings <- mapply(list_clean_standings, apply_point_system)
+merged_standings_w_points <- apply_point_system(clean_standings_merged)
+
+merged_standings_points_div <- merge(
+    merged_standings_w_points,
+    div_conf_long,
+    by = c("Team", "year"),
+    all = TRUE)
+
+```
+
+## Build Playoff Spot Functions
+
+
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+
+#2020 - 2021 playoff teams were top 4 in each division.
+
+set_2020_2021_playoff_teams <- function(df_in) {
+
+    df_out <- df_in %>%
+        group_by(group)
+
+}
 
 ```
