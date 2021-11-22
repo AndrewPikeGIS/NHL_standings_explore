@@ -169,8 +169,16 @@ merged_standings_points_div <- merge(
 set_2020_2021_playoff_teams <- function(df_in) {
 
     df_out <- df_in %>%
-        group_by(group)
+        drop_na() %>%
+        filter(
+            year == "20_21",
+            group_level == "div"
+        ) %>%
+        group_by(group) %>%
+        mutate(div_order_p2 = order(order(points_2, decreasing = TRUE))) %>%
+        ungroup()
 
 }
 
+test <- set_2020_2021_playoff_teams(merged_standings_points_div)
 ```
