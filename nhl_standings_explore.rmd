@@ -6,13 +6,14 @@ output: html_document
 ---
 
 ## Load Libraries
-```{r load_libraries, echo = FALSE}
+```{r load_libraries, echo = FALSE, message= FALSE, warning= FALSE}
 
 library(readr)
 library(dplyr)
 library(tidyr)
 library(stringr)
 library(reshape2)
+library(kableExtra)
 
 print(.packages())
 
@@ -62,11 +63,12 @@ list_standings <- list(
 )
 
 standings_merged <- bind_rows(list_standings, .id = "column_label")
+
 ```
 
 
 ## Clean Standings Table
-```{r clean_data, echo = FALSE, warning = FALSE, message = FALSE}
+```{r clean_data, echo = TRUE, warning = FALSE, message = FALSE}
 clean_table <- function(df_in) {
     df_out <- df_in %>%
         separate(Overall, c("wins", "losses", "ot_losses"), "-") %>%
@@ -109,10 +111,19 @@ clean_table <- function(df_in) {
 }
 
 clean_standings_merged <- clean_table(standings_merged)
+
+kbl(clean_standings_merged) %>%
+    kable_styling(
+        bootstrap_options = c(
+            "striped",
+            "hover",
+            "condensed",
+            "responsive")) %>%
+    scroll_box(width = "1000px", height = "500px")
 ```
 
 ## Clean division table
-```{r clean_division_table, echo = FALSE, warning = FALSE, message = FALSE}
+```{r clean_division_table, echo = TRUE, warning = FALSE, message = FALSE}
 #quick division table clean up
 
 div_conf <- read_csv("data/conference_division_alignment.csv")
@@ -137,7 +148,7 @@ div_conf_long <- cbind(div_conf_long, div_conf_split)
 
 ## Apply points schemas
 
-```{r, echo = FALSE, warning = FALSE, message = FALSE}
+```{r, echo = TRUE, warning = FALSE, message = FALSE}
 apply_point_system <- function(df_in) {
     df_out <- df_in %>%
         mutate(
@@ -175,10 +186,63 @@ set_2020_2021_playoff_teams <- function(df_in) {
             group_level == "div"
         ) %>%
         group_by(group) %>%
-        mutate(div_order_p2 = order(order(points_2, decreasing = TRUE))) %>%
+        mutate(
+            div_order_p2 = order(
+                order(
+                    points_2,
+                    decreasing = TRUE)),
+            div_order_p3 = order(
+                order(
+                    points_3,
+                    decreasing = TRUE)),
+            div_order_win_loss = order(
+                order(
+                    points_win_loss,
+                    decreasing = TRUE)),
+            playoff_p2 = if_else(div_order_p2 <= 4, "yes", "no"),
+            playoff_p3 = if_else(div_order_p3 <= 4, "yes", "no"),
+            playoff_win_loss = if_else(div_order_win_loss <= 4, "yes", "no"),
+        ) %>%
         ungroup()
-
+    return(df_out)
 }
 
-test <- set_2020_2021_playoff_teams(merged_standings_points_div)
+filter_div <- function(df_in, division) {
+    df_out <- df_in %>%
+        filter(group == division)
+    return(df_out)
+}
+
+playoff_table_select <- function(df_in, points_field, playoff_field) {
+    df_out <- df_in %>%
+        select(
+            Team,
+            wins,
+            losses,
+            ot_losses,
+            ot_wins,
+            !!points_field,
+            !!playoff_field) %>%
+        arrange(desc(!!points_field))
+    return(df_out)
+}
+
+playoff_table_kable <- function(df_in) {
+    df_in %>%
+        kbl() %>%
+        kable_styling(
+            bootstrap_options = c(
+                "striped",
+                "hover",
+                "condensed",
+                "responsive")) %>%
+        scroll_box(width = "1000px", height = "300px")
+}
+
+set_2020_2021_playoff_teams(
+    merged_standings_points_div
+    ) %>%
+    filter_div("North") %>%
+    playoff_table_select(quo(points_2), quo(playoff_p2)) %>%
+    playoff_table_kable()
 ```
