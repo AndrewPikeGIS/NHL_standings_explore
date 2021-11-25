@@ -14,7 +14,7 @@ library(tidyr)
 library(stringr)
 library(reshape2)
 library(kableExtra)
-
+library(reactable)
 print(.packages())
 
 ```
@@ -154,7 +154,7 @@ apply_point_system <- function(df_in) {
         mutate(
             points_2 = (2 * wins) + (1 * ot_losses),
             points_3 = (3 * wins) + (2 * ot_wins) + (1 * ot_losses),
-            points_win_loss = wins
+            points_win_loss = wins + ot_wins
         )
     return(df_out)
 }
@@ -170,8 +170,6 @@ merged_standings_points_div <- merge(
 ```
 
 ## Build Playoff Spot Functions
-
-
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 
@@ -217,32 +215,122 @@ playoff_table_select <- function(df_in, points_field, playoff_field) {
     df_out <- df_in %>%
         select(
             Team,
+            group,
             wins,
             losses,
             ot_losses,
             ot_wins,
             !!points_field,
             !!playoff_field) %>%
-        arrange(desc(!!points_field))
+        arrange(
+            group,
+            desc(!!points_field)) %>%
+        rename(
+            "Group" = group,
+            "Wins" = wins,
+            "Losses" = losses,
+            "OT Losses" = ot_losses,
+            "OT Wins" = ot_wins,
+            "Points Earned" = !!points_field,
+            "Playoff Birth Earned" = !!playoff_field
+        )
     return(df_out)
 }
 
+get_div_team_count <- function(df_in, div_in) {
+    df_out <- df_in %>%
+        filter(Group == div_in)
+    return(length(df_out$Team))
+}
+
 playoff_table_kable <- function(df_in) {
+    central_count <- get_div_team_count(df_in, "Central")
+    east_count <- get_div_team_count(df_in, "East")
+    north_count <- get_div_team_count(df_in, "North")
+    west_count <- get_div_team_count(df_in, "West")
+
     df_in %>%
-        kbl() %>%
+        kable() %>%
+        row_spec(1:4, bold = TRUE) %>%
+        row_spec(
+            (1 + central_count):(4 + central_count),
+            bold = TRUE) %>%
+        row_spec(
+            (1 + central_count + east_count):(4 + central_count + east_count),
+            bold = TRUE) %>%
+        row_spec(
+            (1 + central_count + east_count + north_count):(4 + central_count + east_count + north_count),      # nolint
+            bold = TRUE) %>%
         kable_styling(
             bootstrap_options = c(
                 "striped",
                 "hover",
-                "condensed",
                 "responsive")) %>%
-        scroll_box(width = "1000px", height = "300px")
+        pack_rows(
+            index = c(
+                "Central" = central_count,
+                "East" = east_count,
+                "North" = north_count,
+                "West" = west_count
+                ))
 }
+
+find_playoff_changes <- function(df_in) {
+    df_out <- df_in %>%
+        filter(
+            playoff_p2 != playoff_p3 | 
+            playoff_p2 != playoff_win_loss |
+            playoff_win_loss != playoff_p3
+        )
+    
+    return(df_out)
+} 
+
+discrepancies_df <- find_playoff_changes(
+    set_2020_2021_playoff_teams(merged_standings_points_div)
+)
+
+View(discrepancies_df)
+
+```
+
+
+## 2020-2021 Standings
+
+### 2 Point System 
+#### 1 point for overtime loss, 2 points for a regulation win
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
 
 set_2020_2021_playoff_teams(
     merged_standings_points_div
     ) %>%
-    filter_div("North") %>%
     playoff_table_select(quo(points_2), quo(playoff_p2)) %>%
+    playoff_table_kable()
+
+```
+
+### 3 Point System
+#### 1 point for overtime loss, 2 point for overtime win, 3 points for regulation win
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+
+set_2020_2021_playoff_teams(
+    merged_standings_points_div
+    ) %>%
+    playoff_table_select(quo(points_3), quo(playoff_p3)) %>%
+    playoff_table_kable()
+
+```
+
+
+### Win/Loss Point System
+#### 1 point for regulation or overtime win, 0 points for regulation or overtime loss
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+set_2020_2021_playoff_teams(
+    merged_standings_points_div
+    ) %>%
+    playoff_table_select(quo(points_win_loss), quo(playoff_win_loss)) %>%
     playoff_table_kable()
 ```
