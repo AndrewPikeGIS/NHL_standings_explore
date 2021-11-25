@@ -282,15 +282,14 @@ find_playoff_changes <- function(df_in) {
             playoff_p2 != playoff_win_loss |
             playoff_win_loss != playoff_p3
         )
-    
+
     return(df_out)
 } 
 
-discrepancies_df <- find_playoff_changes(
-    set_2020_2021_playoff_teams(merged_standings_points_div)
-)
+#build function for playoff seeding 2014 - 2019
 
-View(discrepancies_df)
+#build function for playoff seeding 2019 - 2020
+
 
 ```
 
@@ -333,4 +332,13 @@ set_2020_2021_playoff_teams(
     ) %>%
     playoff_table_select(quo(points_win_loss), quo(playoff_win_loss)) %>%
     playoff_table_kable()
+```
+
+### Discrepancies between the points systems
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+discrepancies_df <- find_playoff_changes(
+    set_2020_2021_playoff_teams(merged_standings_points_div)
+)
+
 ```
