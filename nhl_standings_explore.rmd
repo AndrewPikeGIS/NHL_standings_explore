@@ -324,11 +324,14 @@ set_2014_2019_div_seeding <- function(df_in) {
     return(div_winners_out)
 }
 
-set_2014_2019_conf_seeding <- function(df_in) {
+set_2014_2019_conf_seeding <- function(df_in,
+                                       filter_col,
+                                       conf_order,
+                                       playoff_col) {
     div_winners_out <- df_in %>%
         filter(
             group_level == "conf" &
-            
+            !!filter_col == "no" &
             (year == "13_14" |
             year == "14_15" |
             year == "15_16" |
@@ -339,23 +342,14 @@ set_2014_2019_conf_seeding <- function(df_in) {
         drop_na() %>%
         group_by(
             group,
-            year) %>%
+            year
+        ) %>%
         mutate(
-            div_order_p2 = order(
+            conf_order = order(
                 order(
                     points_2,
                     decreasing = TRUE)),
-            div_order_p3 = order(
-                order(
-                    points_3,
-                    decreasing = TRUE)),
-            div_order_win_loss = order(
-                order(
-                    points_win_loss,
-                    decreasing = TRUE)),
-            playoff_p2 = if_else(div_order_p2 <= 3, "yes", "no"),
-            playoff_p3 = if_else(div_order_p3 <= 3, "yes", "no"),
-            playoff_win_loss = if_else(div_order_win_loss <= 3, "yes", "no"),
+            playoff_col = if_else(conf_order <= 3, "yes", "no"),
         ) %>%
         ungroup()
     return(div_winners_out)
@@ -378,18 +372,13 @@ merged_standings_points_div <- merge(
 #build function for playoff seeding 2019 - 2020
 
 
-test2 <- merged_standings_points_div %>%
-    filter(
-        group_level == "conf" &
-        (year == "13_14" |
-        year == "14_15" |
-        year == "15_16" |
-        year == "16_17" |
-        year == "17_18" |
-        year == "18_19")
-        ) %>%
-    drop_na() 
-
+test2 <- set_2014_2019_conf_seeding(
+    merged_standings_points_div,
+    quo(playoff_p2),
+    "conf_order_p2",
+    "playoff_p2"
+)
+    
 
 View(test2)
 ```
