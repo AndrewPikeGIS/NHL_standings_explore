@@ -166,7 +166,7 @@ merged_standings_points_div <- merge(
     div_conf_long,
     by = c("Team", "year"),
     all = TRUE)
-
+    
 ```
 
 ## Build Playoff Spot Functions
@@ -286,101 +286,7 @@ find_playoff_changes <- function(df_in) {
     return(df_out)
 }
 
-#build function for playoff seeding 2014 - 2019
-#top three in each division then two wildcards
-set_2014_2019_div_seeding <- function(df_in) {
-    div_winners_out <- df_in %>%
-        filter(
-            group_level == "div" &
-            (year == "13_14" |
-            year == "14_15" |
-            year == "15_16" |
-            year == "16_17" |
-            year == "17_18" |
-            year == "18_19")
-        ) %>%
-        drop_na() %>%
-        group_by(
-            group,
-            year) %>%
-        mutate(
-            div_order_p2 = order(
-                order(
-                    points_2,
-                    decreasing = TRUE)),
-            div_order_p3 = order(
-                order(
-                    points_3,
-                    decreasing = TRUE)),
-            div_order_win_loss = order(
-                order(
-                    points_win_loss,
-                    decreasing = TRUE)),
-            playoff_p2 = if_else(div_order_p2 <= 3, "yes", "no"),
-            playoff_p3 = if_else(div_order_p3 <= 3, "yes", "no"),
-            playoff_win_loss = if_else(div_order_win_loss <= 3, "yes", "no"),
-        ) %>%
-        ungroup()
-    return(div_winners_out)
-}
 
-set_2014_2019_conf_seeding <- function(df_in,
-                                       filter_col,
-                                       conf_order,
-                                       playoff_col) {
-    div_winners_out <- df_in %>%
-        filter(
-            group_level == "conf" &
-            !!filter_col == "no" &
-            (year == "13_14" |
-            year == "14_15" |
-            year == "15_16" |
-            year == "16_17" |
-            year == "17_18" |
-            year == "18_19")
-        ) %>%
-        drop_na() %>%
-        group_by(
-            group,
-            year
-        ) %>%
-        mutate(
-            conf_order = order(
-                order(
-                    points_2,
-                    decreasing = TRUE)),
-            playoff_col = if_else(conf_order <= 3, "yes", "no"),
-        ) %>%
-        ungroup()
-    return(div_winners_out)
-}
-
-
-test <- set_2014_2019_div_seeding(merged_standings_points_div)
-View(test)
-
-merged_standings_points_div <- merge(
-    x = merged_standings_points_div,
-    y = test[, c(
-        "Team",
-        "year",
-        "playoff_p2",
-        "playoff_p3",
-        "playoff_win_loss")],
-    by = c("Team", "year"),
-    all.x = TRUE)
-#build function for playoff seeding 2019 - 2020
-
-
-test2 <- set_2014_2019_conf_seeding(
-    merged_standings_points_div,
-    quo(playoff_p2),
-    "conf_order_p2",
-    "playoff_p2"
-)
-    
-
-View(test2)
 ```
 
 
@@ -431,4 +337,178 @@ discrepancies_df <- find_playoff_changes(
     set_2020_2021_playoff_teams(merged_standings_points_div)
 )
 
+```
+
+## 2014 2019 playoff standings
+
+```{r build_14_19_functions, echo = FALSE, warning = FALSE, message = FALSE}
+#build function for playoff seeding 2014 - 2019
+#top three in each division then two wildcards
+set_2014_2019_div_seeding <- function(df_in) {
+    div_winners_out <- df_in %>%
+        filter(
+            group_level == "div" &
+            (year == "13_14" |
+            year == "14_15" |
+            year == "15_16" |
+            year == "16_17" |
+            year == "17_18" |
+            year == "18_19")
+        ) %>%
+        drop_na() %>%
+        group_by(
+            group,
+            year) %>%
+        mutate(
+            div_order_p2 = order(
+                order(
+                    points_2,
+                    decreasing = TRUE)),
+            div_order_p3 = order(
+                order(
+                    points_3,
+                    decreasing = TRUE)),
+            div_order_win_loss = order(
+                order(
+                    points_win_loss,
+                    decreasing = TRUE)),
+            playoff_p2 = if_else(div_order_p2 <= 3, "yes", "no"),
+            playoff_p3 = if_else(div_order_p3 <= 3, "yes", "no"),
+            playoff_win_loss = if_else(div_order_win_loss <= 3, "yes", "no"),
+        ) %>%
+        ungroup()
+    return(div_winners_out)
+}
+
+set_2014_2019_conf_seeding <- function(df_in,
+                                       filter_col,
+                                       points_col) {
+    div_winners_out <- df_in %>%
+        filter(
+            group_level == "conf" &
+            !!filter_col == "no" &
+            (year == "13_14" |
+            year == "14_15" |
+            year == "15_16" |
+            year == "16_17" |
+            year == "17_18" |
+            year == "18_19")
+        ) %>%
+        drop_na() %>%
+        group_by(
+            group,
+            year
+        ) %>%
+        mutate(
+            conf_order = order(
+                order(
+                    !!points_col,
+                    decreasing = TRUE)),
+            playoff_col = if_else(conf_order <= 2, "yes", "no"),
+        ) %>%
+        ungroup()
+    return(div_winners_out)
+}
+
+
+div_playoff_2014_19 <- set_2014_2019_div_seeding(merged_standings_points_div)
+
+standings_2014_19_w_div_po <- merge(
+    x = merged_standings_points_div,
+    y = div_playoff_2014_19[, c(
+        "Team",
+        "year",
+        "playoff_p2",
+        "playoff_p3",
+        "playoff_win_loss")],
+    by = c("Team", "year"),
+    all.x = TRUE)
+#build function for playoff seeding 2019 - 2020
+
+
+conf_p2_playoff_14_19 <- set_2014_2019_conf_seeding(
+    standings_2014_19_w_div_po,
+    quo(playoff_p2),
+    quo(points_2)
+)
+
+conf_p3_playoff_14_19 <- set_2014_2019_conf_seeding(
+    standings_2014_19_w_div_po,
+    quo(playoff_p3),
+    quo(points_3)
+)
+
+conf_wl_playoff_14_19 <- set_2014_2019_conf_seeding(
+    standings_2014_19_w_div_po,
+    quo(playoff_win_loss),
+    quo(points_win_loss)
+)
+
+View(conf_p3_playoff_14_19)
+
+div_p2_playoff_14_19 <- div_playoff_2014_19 %>%
+    filter(playoff_p2 == "yes") %>%
+    select(
+        Team,
+        year,
+        playoff_p2
+    )
+
+div_p3_playoff_14_19 <- div_playoff_2014_19 %>%
+    filter(playoff_p3 == "yes") %>%
+    select(
+        Team,
+        year,
+        playoff_p3
+    )
+
+div_wl_playoff_14_19 <- div_playoff_2014_19 %>%
+    filter(playoff_win_loss == "yes") %>%
+    select(
+        Team,
+        year,
+        playoff_win_loss
+    )
+
+conf_p2_playoff_14_19 <- conf_p2_playoff_14_19 %>%
+    select(
+        Team,
+        year,
+        playoff_col
+    ) %>%
+    rename(
+        playoff_p2 = playoff_col
+    )
+
+conf_p3_playoff_14_19 <- conf_p3_playoff_14_19 %>%
+    select(
+        Team,
+        year,
+        playoff_col
+    ) %>%
+    rename(
+        playoff_p3 = playoff_col
+    )
+
+conf_wl_playoff_14_19 <- conf_wl_playoff_14_19 %>%
+    select(
+        Team,
+        year,
+        playoff_col
+    ) %>%
+    rename(
+        playoff_win_loss = playoff_col
+    )
+
+wild_card_p2_14_19 <- rbind(div_p2_playoff_14_19, conf_p2_playoff_14_19)
+wild_card_p3_14_19 <- rbind(div_p3_playoff_14_19, conf_p3_playoff_14_19)
+wild_card_wl_14_19 <- rbind(div_wl_playoff_14_19, conf_wl_playoff_14_19)
+
+View(wild_card_p2_14_19)
+
+wild_card_14_19 <- merge(merged_standings_points_div, wild_card_p2_14_19, by = c("Team", "year"))
+wild_card_14_19 <- merge(wild_card_14_19, wild_card_p3_14_19, by = c("Team", "year"))
+wild_card_14_19 <- merge(wild_card_14_19, wild_card_wl_14_19, by = c("Team", "year"))
+
+View(wild_card_14_19)
 ```
