@@ -363,7 +363,12 @@ discrepancies_df %>%
 
 ```
 
-## 2014 2019 playoff standings
+## 2019 - 2020 Playoffs
+
+The 2019-2020 seaosn was cut short by the global COVID-19 outbreak. When play resumed, playoff teams were decided by a play-in round  robin by the top 24 teams by point percentage. 
+This playoff format is unique and not covered by this analysis as it was not a standard playoff seeding situation.
+
+## 2019-2014 Playoff Standings
 
 ```{r build_14_19_functions, echo = FALSE, warning = FALSE, message = FALSE}
 #build function for playoff seeding 2014 - 2019
@@ -527,8 +532,6 @@ conf_wl_playoff_14_19 <- conf_wl_playoff_14_19 %>%
 wild_card_p2_14_19 <- rbind(div_p2_playoff_14_19, conf_p2_playoff_14_19)
 wild_card_p3_14_19 <- rbind(div_p3_playoff_14_19, conf_p3_playoff_14_19)
 wild_card_wl_14_19 <- rbind(div_wl_playoff_14_19, conf_wl_playoff_14_19)
-
-View(wild_card_p2_14_19)
 
 wild_card_14_19 <- merge(merged_standings_points_div, wild_card_p2_14_19, by = c("Team", "year"))
 wild_card_14_19 <- merge(wild_card_14_19, wild_card_p3_14_19, by = c("Team", "year"))
@@ -1007,6 +1010,838 @@ discrepancies_df <- find_playoff_changes(
 discrepancies_df %>%
     filter(
         year == "13_14" &
+        group_level == "div"
+    ) %>%
+    select(
+        Team,
+        group,
+        wins,
+        losses,
+        ot_losses,
+        ot_wins,
+        points_2,
+        points_3,
+        points_win_loss,
+        playoff_p2,
+        playoff_p3,
+        playoff_win_loss
+    ) %>%
+    kable() %>%
+    kable_styling(
+        bootstrap_options = c(
+            "striped",
+            "hover",
+            "responsive"))
+
+```
+
+## 2013-2005 Standings
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+#build function for playoff seeding 2014 - 2019
+#top three in each division then two wildcards
+set_2005_2013_div_seeding <- function(df_in) {
+    div_winners_out <- df_in %>%
+        filter(
+            group_level == "div" &
+            (year == "12_13" |
+            year == "11_12" |
+            year == "10_11" |
+            year == "09_10" |
+            year == "08_09" |
+            year == "07_08" |
+            year == "06_07" |
+            year == "05_06")
+        ) %>%
+        drop_na() %>%
+        group_by(
+            group,
+            year) %>%
+        mutate(
+            div_order_p2 = order(
+                order(
+                    points_2,
+                    decreasing = TRUE)),
+            div_order_p3 = order(
+                order(
+                    points_3,
+                    decreasing = TRUE)),
+            div_order_win_loss = order(
+                order(
+                    points_win_loss,
+                    decreasing = TRUE)),
+            playoff_p2 = if_else(div_order_p2 == 1, "yes", "no"),
+            playoff_p3 = if_else(div_order_p3 == 1, "yes", "no"),
+            playoff_win_loss = if_else(div_order_win_loss <= 3, "yes", "no"),
+        ) %>%
+        ungroup()
+    return(div_winners_out)
+}
+
+set_2005_2013_conf_seeding <- function(df_in,
+                                       filter_col,
+                                       points_col) {
+    div_winners_out <- df_in %>%
+        filter(
+            group_level == "conf" &
+            !!filter_col == "no" &
+            (year == "12_13" |
+            year == "11_12" |
+            year == "10_11" |
+            year == "09_10" |
+            year == "08_09" |
+            year == "07_08" |
+            year == "06_07" |
+            year == "05_06")
+        ) %>%
+        drop_na() %>%
+        group_by(
+            group,
+            year
+        ) %>%
+        mutate(
+            conf_order = order(
+                order(
+                    !!points_col,
+                    decreasing = TRUE)),
+            playoff_col = if_else(conf_order <= 5, "yes", "no"),
+        ) %>%
+        ungroup()
+    return(div_winners_out)
+}
+
+
+div_playoff_2005_13 <- set_2005_2013_div_seeding(merged_standings_points_div)
+
+standings_2005_13_w_div_po <- merge(
+    x = merged_standings_points_div,
+    y = div_playoff_2005_13[, c(
+        "Team",
+        "year",
+        "playoff_p2",
+        "playoff_p3",
+        "playoff_win_loss")],
+    by = c("Team", "year"),
+    all.x = TRUE)
+#build function for playoff seeding 2019 - 2020
+
+
+conf_p2_playoff_05_13 <- set_2005_2013_conf_seeding(
+    standings_2005_13_w_div_po,
+    quo(playoff_p2),
+    quo(points_2)
+)
+
+conf_p3_playoff_05_13 <- set_2005_2013_conf_seeding(
+    standings_2005_13_w_div_po,
+    quo(playoff_p3),
+    quo(points_3)
+)
+
+conf_wl_playoff_05_13 <- set_2005_2013_conf_seeding(
+    standings_2005_13_w_div_po,
+    quo(playoff_win_loss),
+    quo(points_win_loss)
+)
+
+div_p2_playoff_05_13 <- div_playoff_2005_13 %>%
+    filter(playoff_p2 == "yes") %>%
+    select(
+        Team,
+        year,
+        playoff_p2
+    )
+
+div_p3_playoff_05_13 <- div_playoff_2005_13 %>%
+    filter(playoff_p3 == "yes") %>%
+    select(
+        Team,
+        year,
+        playoff_p3
+    )
+
+div_wl_playoff_05_13 <- div_playoff_2005_13 %>%
+    filter(playoff_win_loss == "yes") %>%
+    select(
+        Team,
+        year,
+        playoff_win_loss
+    )
+
+conf_p2_playoff_05_13 <- conf_p2_playoff_05_13 %>%
+    select(
+        Team,
+        year,
+        playoff_col
+    ) %>%
+    rename(
+        playoff_p2 = playoff_col
+    )
+
+conf_p3_playoff_05_13 <- conf_p3_playoff_05_13 %>%
+    select(
+        Team,
+        year,
+        playoff_col
+    ) %>%
+    rename(
+        playoff_p3 = playoff_col
+    )
+
+conf_wl_playoff_05_13 <- conf_wl_playoff_05_13 %>%
+    select(
+        Team,
+        year,
+        playoff_col
+    ) %>%
+    rename(
+        playoff_win_loss = playoff_col
+    )
+
+standings_p2_05_13 <- rbind(div_p2_playoff_05_13, conf_p2_playoff_05_13)
+standings_p3_05_13 <- rbind(div_p3_playoff_05_13, conf_p3_playoff_05_13)
+standings_wl_05_13 <- rbind(div_wl_playoff_05_13, conf_wl_playoff_05_13)
+
+standings_05_13 <- merge(merged_standings_points_div, standings_p2_05_13, by = c("Team", "year"))
+standings_05_13 <- merge(standings_05_13, standings_p3_05_13, by = c("Team", "year"))
+standings_05_13 <- merge(standings_05_13, standings_wl_05_13, by = c("Team", "year"))
+
+test <- playoff_table_select(
+    standings_05_13,
+    quo(points_2),
+    quo(playoff_p2),
+    year_filter = "12_13")
+
+playoff_table_kable_05_13 <- function(df_in) {
+    pacific_count <- get_div_team_count(df_in, "Pacific")
+    northwest_count <- get_div_team_count(df_in, "Northwest")
+    southeast_count <- get_div_team_count(df_in, "Southeast")
+    northeast_count <- get_div_team_count(df_in, "Northeast")
+    atlantic_count <- get_div_team_count(df_in, "Atlantic")
+    central_count <- get_div_team_count(df_in, "Central")
+
+    playoff_yes <- which(df_in[["Playoff Birth Earned"]] == "yes")
+
+    df_in %>%
+        kable() %>%
+        row_spec(playoff_yes, bold = TRUE) %>%
+        kable_styling(
+            bootstrap_options = c(
+                "striped",
+                "hover",
+                "responsive")) %>%
+        pack_rows(
+            index = c(
+                "Atlantic" = atlantic_count,
+                "Central" = central_count,
+                "Northeast" = northeast_count,
+                "Northwest" = northwest_count,
+                "Pacific" = pacific_count,
+                "Southeast" = southeast_count
+                ))
+}
+
+```
+
+
+## 2012-2013 Playoff Standings
+
+### 2 Point System (current NHL system)
+#### 1 point for overtime loss, 2 points for a regulation win
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+standings_05_13 %>%
+    playoff_table_select(
+        quo(points_2),
+        quo(playoff_p2),
+        year_filter = "12_13") %>%
+    playoff_table_kable_05_13()
+
+```
+
+### 3 Point System
+#### 1 point for overtime loss, 2 point for overtime win, 3 points for regulation win
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+
+standings_05_13 %>%
+    playoff_table_select(
+        quo(points_3),
+        quo(playoff_p3),
+        year_filter = "12_13") %>%
+    playoff_table_kable_05_13()
+
+```
+
+
+### Win/Loss Point System
+#### 1 point for regulation or overtime win, 0 points for regulation or overtime loss
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+standings_05_13 %>%
+    playoff_table_select(
+        quo(points_win_loss),
+        quo(playoff_win_loss),
+        year_filter = "12_13") %>%
+    playoff_table_kable_05_13()
+```
+
+
+### Discrepancies between the systems/ Do different point systems alter playoff teams?
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+discrepancies_df <- find_playoff_changes(
+    standings_05_13
+)
+
+discrepancies_df %>%
+    filter(
+        year == "12_13" &
+        group_level == "div"
+    ) %>%
+    select(
+        Team,
+        group,
+        wins,
+        losses,
+        ot_losses,
+        ot_wins,
+        points_2,
+        points_3,
+        points_win_loss,
+        playoff_p2,
+        playoff_p3,
+        playoff_win_loss
+    ) %>%
+    kable() %>%
+    kable_styling(
+        bootstrap_options = c(
+            "striped",
+            "hover",
+            "responsive"))
+
+```
+
+## 2011-2012 Playoff Standings
+
+### 2 Point System (current NHL system)
+#### 1 point for overtime loss, 2 points for a regulation win
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+standings_05_13 %>%
+    playoff_table_select(
+        quo(points_2),
+        quo(playoff_p2),
+        year_filter = "11_11") %>%
+    playoff_table_kable_05_13()
+
+```
+
+### 3 Point System
+#### 1 point for overtime loss, 2 point for overtime win, 3 points for regulation win
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+
+standings_05_13 %>%
+    playoff_table_select(
+        quo(points_3),
+        quo(playoff_p3),
+        year_filter = "11_12") %>%
+    playoff_table_kable_05_13()
+
+```
+
+
+### Win/Loss Point System
+#### 1 point for regulation or overtime win, 0 points for regulation or overtime loss
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+standings_05_13 %>%
+    playoff_table_select(
+        quo(points_win_loss),
+        quo(playoff_win_loss),
+        year_filter = "11_12") %>%
+    playoff_table_kable_05_13()
+```
+
+
+### Discrepancies between the systems/ Do different point systems alter playoff teams?
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+discrepancies_df <- find_playoff_changes(
+    standings_05_13
+)
+
+discrepancies_df %>%
+    filter(
+        year == "11_12" &
+        group_level == "div"
+    ) %>%
+    select(
+        Team,
+        group,
+        wins,
+        losses,
+        ot_losses,
+        ot_wins,
+        points_2,
+        points_3,
+        points_win_loss,
+        playoff_p2,
+        playoff_p3,
+        playoff_win_loss
+    ) %>%
+    kable() %>%
+    kable_styling(
+        bootstrap_options = c(
+            "striped",
+            "hover",
+            "responsive"))
+
+```
+
+## 2010-2011 Playoff Standings
+
+### 2 Point System (current NHL system)
+#### 1 point for overtime loss, 2 points for a regulation win
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+standings_05_13 %>%
+    playoff_table_select(
+        quo(points_2),
+        quo(playoff_p2),
+        year_filter = "10_11") %>%
+    playoff_table_kable_05_13()
+
+```
+
+### 3 Point System
+#### 1 point for overtime loss, 2 point for overtime win, 3 points for regulation win
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+
+standings_05_13 %>%
+    playoff_table_select(
+        quo(points_3),
+        quo(playoff_p3),
+        year_filter = "10_11") %>%
+    playoff_table_kable_05_13()
+
+```
+
+
+### Win/Loss Point System
+#### 1 point for regulation or overtime win, 0 points for regulation or overtime loss
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+standings_05_13 %>%
+    playoff_table_select(
+        quo(points_win_loss),
+        quo(playoff_win_loss),
+        year_filter = "10_11") %>%
+    playoff_table_kable_05_13()
+```
+
+
+### Discrepancies between the systems/ Do different point systems alter playoff teams?
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+discrepancies_df <- find_playoff_changes(
+    standings_05_13
+)
+
+discrepancies_df %>%
+    filter(
+        year == "10_11" &
+        group_level == "div"
+    ) %>%
+    select(
+        Team,
+        group,
+        wins,
+        losses,
+        ot_losses,
+        ot_wins,
+        points_2,
+        points_3,
+        points_win_loss,
+        playoff_p2,
+        playoff_p3,
+        playoff_win_loss
+    ) %>%
+    kable() %>%
+    kable_styling(
+        bootstrap_options = c(
+            "striped",
+            "hover",
+            "responsive"))
+
+```
+
+## 2009-2010 Playoff Standings
+
+### 2 Point System (current NHL system)
+#### 1 point for overtime loss, 2 points for a regulation win
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+standings_05_13 %>%
+    playoff_table_select(
+        quo(points_2),
+        quo(playoff_p2),
+        year_filter = "09_10") %>%
+    playoff_table_kable_05_13()
+
+```
+
+### 3 Point System
+#### 1 point for overtime loss, 2 point for overtime win, 3 points for regulation win
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+
+standings_05_13 %>%
+    playoff_table_select(
+        quo(points_3),
+        quo(playoff_p3),
+        year_filter = "09_10") %>%
+    playoff_table_kable_05_13()
+
+```
+
+
+### Win/Loss Point System
+#### 1 point for regulation or overtime win, 0 points for regulation or overtime loss
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+standings_05_13 %>%
+    playoff_table_select(
+        quo(points_win_loss),
+        quo(playoff_win_loss),
+        year_filter = "09_10") %>%
+    playoff_table_kable_05_13()
+```
+
+
+### Discrepancies between the systems/ Do different point systems alter playoff teams?
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+discrepancies_df <- find_playoff_changes(
+    standings_05_13
+)
+
+discrepancies_df %>%
+    filter(
+        year == "09_10" &
+        group_level == "div"
+    ) %>%
+    select(
+        Team,
+        group,
+        wins,
+        losses,
+        ot_losses,
+        ot_wins,
+        points_2,
+        points_3,
+        points_win_loss,
+        playoff_p2,
+        playoff_p3,
+        playoff_win_loss
+    ) %>%
+    kable() %>%
+    kable_styling(
+        bootstrap_options = c(
+            "striped",
+            "hover",
+            "responsive"))
+
+```
+
+## 2008-2009 Playoff Standings
+
+### 2 Point System (current NHL system)
+#### 1 point for overtime loss, 2 points for a regulation win
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+standings_05_13 %>%
+    playoff_table_select(
+        quo(points_2),
+        quo(playoff_p2),
+        year_filter = "08_09") %>%
+    playoff_table_kable_05_13()
+
+```
+
+### 3 Point System
+#### 1 point for overtime loss, 2 point for overtime win, 3 points for regulation win
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+
+standings_05_13 %>%
+    playoff_table_select(
+        quo(points_3),
+        quo(playoff_p3),
+        year_filter = "08_09") %>%
+    playoff_table_kable_05_13()
+
+```
+
+
+### Win/Loss Point System
+#### 1 point for regulation or overtime win, 0 points for regulation or overtime loss
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+standings_05_13 %>%
+    playoff_table_select(
+        quo(points_win_loss),
+        quo(playoff_win_loss),
+        year_filter = "08_09") %>%
+    playoff_table_kable_05_13()
+```
+
+
+### Discrepancies between the systems/ Do different point systems alter playoff teams?
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+discrepancies_df <- find_playoff_changes(
+    standings_05_13
+)
+
+discrepancies_df %>%
+    filter(
+        year == "08_09" &
+        group_level == "div"
+    ) %>%
+    select(
+        Team,
+        group,
+        wins,
+        losses,
+        ot_losses,
+        ot_wins,
+        points_2,
+        points_3,
+        points_win_loss,
+        playoff_p2,
+        playoff_p3,
+        playoff_win_loss
+    ) %>%
+    kable() %>%
+    kable_styling(
+        bootstrap_options = c(
+            "striped",
+            "hover",
+            "responsive"))
+
+```
+
+## 2007-2008 Playoff Standings
+
+### 2 Point System (current NHL system)
+#### 1 point for overtime loss, 2 points for a regulation win
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+standings_05_13 %>%
+    playoff_table_select(
+        quo(points_2),
+        quo(playoff_p2),
+        year_filter = "07_08") %>%
+    playoff_table_kable_05_13()
+
+```
+
+### 3 Point System
+#### 1 point for overtime loss, 2 point for overtime win, 3 points for regulation win
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+
+standings_05_13 %>%
+    playoff_table_select(
+        quo(points_3),
+        quo(playoff_p3),
+        year_filter = "07_08") %>%
+    playoff_table_kable_05_13()
+
+```
+
+
+### Win/Loss Point System
+#### 1 point for regulation or overtime win, 0 points for regulation or overtime loss
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+standings_05_13 %>%
+    playoff_table_select(
+        quo(points_win_loss),
+        quo(playoff_win_loss),
+        year_filter = "07_08") %>%
+    playoff_table_kable_05_13()
+```
+
+
+### Discrepancies between the systems/ Do different point systems alter playoff teams?
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+discrepancies_df <- find_playoff_changes(
+    standings_05_13
+)
+
+discrepancies_df %>%
+    filter(
+        year == "07_08" &
+        group_level == "div"
+    ) %>%
+    select(
+        Team,
+        group,
+        wins,
+        losses,
+        ot_losses,
+        ot_wins,
+        points_2,
+        points_3,
+        points_win_loss,
+        playoff_p2,
+        playoff_p3,
+        playoff_win_loss
+    ) %>%
+    kable() %>%
+    kable_styling(
+        bootstrap_options = c(
+            "striped",
+            "hover",
+            "responsive"))
+
+```
+
+## 2006-2007 Playoff Standings
+### 2 Point System (current NHL system)
+#### 1 point for overtime loss, 2 points for a regulation win
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+standings_05_13 %>%
+    playoff_table_select(
+        quo(points_2),
+        quo(playoff_p2),
+        year_filter = "06_07") %>%
+    playoff_table_kable_05_13()
+
+```
+
+### 3 Point System
+#### 1 point for overtime loss, 2 point for overtime win, 3 points for regulation win
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+
+standings_05_13 %>%
+    playoff_table_select(
+        quo(points_3),
+        quo(playoff_p3),
+        year_filter = "06_07") %>%
+    playoff_table_kable_05_13()
+
+```
+
+
+### Win/Loss Point System
+#### 1 point for regulation or overtime win, 0 points for regulation or overtime loss
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+standings_05_13 %>%
+    playoff_table_select(
+        quo(points_win_loss),
+        quo(playoff_win_loss),
+        year_filter = "06_07") %>%
+    playoff_table_kable_05_13()
+```
+
+
+### Discrepancies between the systems/ Do different point systems alter playoff teams?
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+discrepancies_df <- find_playoff_changes(
+    standings_05_13
+)
+
+discrepancies_df %>%
+    filter(
+        year == "06_07" &
+        group_level == "div"
+    ) %>%
+    select(
+        Team,
+        group,
+        wins,
+        losses,
+        ot_losses,
+        ot_wins,
+        points_2,
+        points_3,
+        points_win_loss,
+        playoff_p2,
+        playoff_p3,
+        playoff_win_loss
+    ) %>%
+    kable() %>%
+    kable_styling(
+        bootstrap_options = c(
+            "striped",
+            "hover",
+            "responsive"))
+
+```
+
+## 2005-2006 Playoff Standings
+
+### 2 Point System (current NHL system)
+#### 1 point for overtime loss, 2 points for a regulation win
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+standings_05_13 %>%
+    playoff_table_select(
+        quo(points_2),
+        quo(playoff_p2),
+        year_filter = "05_06") %>%
+    playoff_table_kable_05_13()
+
+```
+
+### 3 Point System
+#### 1 point for overtime loss, 2 point for overtime win, 3 points for regulation win
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+
+standings_05_13 %>%
+    playoff_table_select(
+        quo(points_3),
+        quo(playoff_p3),
+        year_filter = "05_06") %>%
+    playoff_table_kable_05_13()
+
+```
+
+
+### Win/Loss Point System
+#### 1 point for regulation or overtime win, 0 points for regulation or overtime loss
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+standings_05_13 %>%
+    playoff_table_select(
+        quo(points_win_loss),
+        quo(playoff_win_loss),
+        year_filter = "05_06") %>%
+    playoff_table_kable_05_13()
+```
+
+
+### Discrepancies between the systems/ Do different point systems alter playoff teams?
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+discrepancies_df <- find_playoff_changes(
+    standings_05_13
+)
+
+discrepancies_df %>%
+    filter(
+        year == "05_06" &
         group_level == "div"
     ) %>%
     select(
