@@ -368,7 +368,7 @@ discrepancies_df %>%
 The 2019-2020 seaosn was cut short by the global COVID-19 outbreak. When play resumed, playoff teams were decided by a play-in round  robin by the top 24 teams by point percentage. 
 This playoff format is unique and not covered by this analysis as it was not a standard playoff seeding situation.
 
-## 2019-2014 Playoff Standings
+## 2014-2019 Playoff Standings
 
 ```{r build_14_19_functions, echo = FALSE, warning = FALSE, message = FALSE}
 #build function for playoff seeding 2014 - 2019
@@ -472,8 +472,6 @@ conf_wl_playoff_14_19 <- set_2014_2019_conf_seeding(
     quo(playoff_win_loss),
     quo(points_win_loss)
 )
-
-View(conf_p3_playoff_14_19)
 
 div_p2_playoff_14_19 <- div_playoff_2014_19 %>%
     filter(playoff_p2 == "yes") %>%
@@ -1035,7 +1033,7 @@ discrepancies_df %>%
 
 ```
 
-## 2013-2005 Standings
+## 2005-2013 Standings
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 #build function for playoff seeding 2014 - 2019
@@ -1332,7 +1330,7 @@ standings_05_13 %>%
     playoff_table_select(
         quo(points_2),
         quo(playoff_p2),
-        year_filter = "11_11") %>%
+        year_filter = "11_12") %>%
     playoff_table_kable_05_13()
 
 ```
