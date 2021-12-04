@@ -2,10 +2,14 @@
 title: "NHL standings investigation"
 author: "Andrew Pike"
 date: "11/17/2021"
-output: html_document
+output:
+    rmdformats::downcute:
+        use_bookdown: false
+        toc_depth: 3
+        highlight: tango
 ---
 
-## Load Libraries
+# Load Libraries
 ```{r load_libraries, echo = FALSE, message= FALSE, warning= FALSE}
 
 library(readr)
@@ -19,7 +23,7 @@ print(.packages())
 
 ```
 
-## Load Tables
+# Load Tables
 
 All data was sourced from Hockey-Reference.com
 
@@ -67,8 +71,8 @@ standings_merged <- bind_rows(list_standings, .id = "column_label")
 ```
 
 
-## Clean Standings Table
-```{r clean_data, echo = TRUE, warning = FALSE, message = FALSE}
+# Clean Standings Table
+```{r clean_data, echo = FALSE, warning = FALSE, message = FALSE}
 clean_table <- function(df_in) {
     df_out <- df_in %>%
         separate(Overall, c("wins", "losses", "ot_losses"), "-") %>%
@@ -113,17 +117,15 @@ clean_table <- function(df_in) {
 clean_standings_merged <- clean_table(standings_merged)
 
 kbl(clean_standings_merged) %>%
-    kable_styling(
-        bootstrap_options = c(
-            "striped",
-            "hover",
-            "condensed",
-            "responsive")) %>%
-    scroll_box(width = "1000px", height = "500px")
+    kable_material(
+        c("striped",
+        "hover",
+        "responsive")) %>%
+    scroll_box(height = "500px")
 ```
 
-## Clean division table
-```{r clean_division_table, echo = TRUE, warning = FALSE, message = FALSE}
+# Clean division table
+```{r clean_division_table, echo = FALSE, warning = FALSE, message = FALSE}
 #quick division table clean up
 
 div_conf <- read_csv("data/conference_division_alignment.csv")
@@ -146,9 +148,9 @@ div_conf_long <- cbind(div_conf_long, div_conf_split)
 ```
 
 
-## Apply points schemas
+# Apply points schemas
 
-```{r, echo = TRUE, warning = FALSE, message = FALSE}
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
 apply_point_system <- function(df_in) {
     df_out <- df_in %>%
         mutate(
@@ -166,10 +168,11 @@ merged_standings_points_div <- merge(
     div_conf_long,
     by = c("Team", "year"),
     all = TRUE)
-    
+
+View(merged_standings_points_div) 
 ```
 
-## Build Playoff Spot Functions
+# Build Playoff Spot Functions
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 
@@ -301,10 +304,10 @@ test <- standings_20_21 %>%
 ```
 
 
-## 2020-2021 Playoff Standings
+# 2020-2021 Playoff Standings
 
-### 2 Point System (current NHL system)
-#### 1 point for overtime loss, 2 points for a regulation win
+## 2 Point System (current NHL system)
+**1 point for overtime loss, 2 points for a regulation win**
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 
@@ -314,8 +317,8 @@ standings_20_21 %>%
 
 ```
 
-### 3 Point System
-#### 1 point for overtime loss, 2 point for overtime win, 3 points for regulation win
+## 3 Point System
+**1 point for overtime loss, 2 point for overtime win, 3 points for regulation win**
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 
@@ -326,8 +329,8 @@ standings_20_21 %>%
 ```
 
 
-### Win/Loss Point System
-#### 1 point for regulation or overtime win, 0 points for regulation or overtime loss
+## Win/Loss Point System
+**1 point for regulation or overtime win, 0 points for regulation or overtime loss**
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 standings_20_21 %>%
@@ -335,7 +338,7 @@ standings_20_21 %>%
     playoff_table_kable_20_21()
 ```
 
-### Discrepancies between the systems/ Do different point systems alter playoff teams?
+## Discrepancies between the systems/ Do different point systems alter playoff teams?
 
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
@@ -367,12 +370,13 @@ discrepancies_df %>%
 
 ```
 
-## 2019 - 2020 Playoffs
+# 2019 - 2020 Playoffs
 
-The 2019-2020 seaosn was cut short by the global COVID-19 outbreak. When play resumed, playoff teams were decided by a play-in round  robin by the top 24 teams by point percentage. 
-This playoff format is unique and not covered by this analysis as it was not a standard playoff seeding situation.
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
 
-## 2019-2014 Playoff Standings
+```
+
+# 2019-2014 Playoff Standings
 
 ```{r build_14_19_functions, echo = FALSE, warning = FALSE, message = FALSE}
 #build function for playoff seeding 2014 - 2019
@@ -570,10 +574,10 @@ playoff_table_kable_14_19 <- function(df_in) {
 
 ```
 
-## 2018-2019 Playoff Standings
+# 2018-2019 Playoff Standings
 
-### 2 Point System (current NHL system)
-#### 1 point for overtime loss, 2 points for a regulation win
+## 2 Point System (current NHL system)
+**1 point for overtime loss, 2 points for a regulation win**
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 wild_card_14_19 %>%
@@ -585,8 +589,8 @@ wild_card_14_19 %>%
 
 ```
 
-### 3 Point System
-#### 1 point for overtime loss, 2 point for overtime win, 3 points for regulation win
+## 3 Point System
+**1 point for overtime loss, 2 point for overtime win, 3 points for regulation win**
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 
@@ -600,8 +604,8 @@ wild_card_14_19 %>%
 ```
 
 
-### Win/Loss Point System
-#### 1 point for regulation or overtime win, 0 points for regulation or overtime loss
+## Win/Loss Point System
+**1 point for regulation or overtime win, 0 points for regulation or overtime loss**
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 wild_card_14_19 %>%
@@ -613,7 +617,7 @@ wild_card_14_19 %>%
 ```
 
 
-### Discrepancies between the systems/ Do different point systems alter playoff teams?
+## Discrepancies between the systems/ Do different point systems alter playoff teams?
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 discrepancies_df <- find_playoff_changes(
@@ -649,10 +653,10 @@ discrepancies_df %>%
 ```
 
 
-## 2017-2018 Playoff Standings
+# 2017-2018 Playoff Standings
 
-### 2 Point System (current NHL system)
-#### 1 point for overtime loss, 2 points for a regulation win
+## 2 Point System (current NHL system)
+**1 point for overtime loss, 2 points for a regulation win**
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 wild_card_14_19 %>%
@@ -664,8 +668,8 @@ wild_card_14_19 %>%
 
 ```
 
-### 3 Point System
-#### 1 point for overtime loss, 2 point for overtime win, 3 points for regulation win
+## 3 Point System
+**1 point for overtime loss, 2 point for overtime win, 3 points for regulation win**
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 
@@ -679,8 +683,8 @@ wild_card_14_19 %>%
 ```
 
 
-### Win/Loss Point System
-#### 1 point for regulation or overtime win, 0 points for regulation or overtime loss
+## Win/Loss Point System
+**1 point for regulation or overtime win, 0 points for regulation or overtime loss**
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 wild_card_14_19 %>%
@@ -692,7 +696,7 @@ wild_card_14_19 %>%
 ```
 
 
-### Discrepancies between the systems/ Do different point systems alter playoff teams?
+## Discrepancies between the systems/ Do different point systems alter playoff teams?
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 discrepancies_df <- find_playoff_changes(
@@ -728,10 +732,10 @@ discrepancies_df %>%
 ```
 
 
-## 2016-2017 Playoff Standings
+# 2016-2017 Playoff Standings
 
-### 2 Point System (current NHL system)
-#### 1 point for overtime loss, 2 points for a regulation win
+## 2 Point System (current NHL system)
+**1 point for overtime loss, 2 points for a regulation win**
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 wild_card_14_19 %>%
@@ -743,8 +747,8 @@ wild_card_14_19 %>%
 
 ```
 
-### 3 Point System
-#### 1 point for overtime loss, 2 point for overtime win, 3 points for regulation win
+## 3 Point System
+**1 point for overtime loss, 2 point for overtime win, 3 points for regulation win**
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 
@@ -758,8 +762,8 @@ wild_card_14_19 %>%
 ```
 
 
-### Win/Loss Point System
-#### 1 point for regulation or overtime win, 0 points for regulation or overtime loss
+## Win/Loss Point System
+**1 point for regulation or overtime win, 0 points for regulation or overtime loss**
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 wild_card_14_19 %>%
@@ -771,7 +775,7 @@ wild_card_14_19 %>%
 ```
 
 
-### Discrepancies between the systems/ Do different point systems alter playoff teams?
+## Discrepancies between the systems/ Do different point systems alter playoff teams?
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 discrepancies_df <- find_playoff_changes(
@@ -806,10 +810,10 @@ discrepancies_df %>%
 
 ```
 
-## 2015-2016 Playoff Standings
+# 2015-2016 Playoff Standings
 
-### 2 Point System (current NHL system)
-#### 1 point for overtime loss, 2 points for a regulation win
+## 2 Point System (current NHL system)
+**1 point for overtime loss, 2 points for a regulation win**
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 wild_card_14_19 %>%
@@ -821,8 +825,8 @@ wild_card_14_19 %>%
 
 ```
 
-### 3 Point System
-#### 1 point for overtime loss, 2 point for overtime win, 3 points for regulation win
+## 3 Point System
+**1 point for overtime loss, 2 point for overtime win, 3 points for regulation win**
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 
@@ -836,8 +840,8 @@ wild_card_14_19 %>%
 ```
 
 
-### Win/Loss Point System
-#### 1 point for regulation or overtime win, 0 points for regulation or overtime loss
+## Win/Loss Point System
+**1 point for regulation or overtime win, 0 points for regulation or overtime loss**
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 wild_card_14_19 %>%
@@ -849,7 +853,7 @@ wild_card_14_19 %>%
 ```
 
 
-### Discrepancies between the systems/ Do different point systems alter playoff teams?
+## Discrepancies between the systems/ Do different point systems alter playoff teams?
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 discrepancies_df <- find_playoff_changes(
@@ -885,10 +889,10 @@ discrepancies_df %>%
 ```
 
 
-## 2014-2015 Playoff Standings
+# 2014-2015 Playoff Standings
 
-### 2 Point System (current NHL system)
-#### 1 point for overtime loss, 2 points for a regulation win
+## 2 Point System (current NHL system)
+**1 point for overtime loss, 2 points for a regulation win**
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 wild_card_14_19 %>%
@@ -900,8 +904,8 @@ wild_card_14_19 %>%
 
 ```
 
-### 3 Point System
-#### 1 point for overtime loss, 2 point for overtime win, 3 points for regulation win
+## 3 Point System
+**1 point for overtime loss, 2 point for overtime win, 3 points for regulation win**
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 
@@ -915,8 +919,8 @@ wild_card_14_19 %>%
 ```
 
 
-### Win/Loss Point System
-#### 1 point for regulation or overtime win, 0 points for regulation or overtime loss
+## Win/Loss Point System
+**1 point for regulation or overtime win, 0 points for regulation or overtime loss**
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 wild_card_14_19 %>%
@@ -928,7 +932,7 @@ wild_card_14_19 %>%
 ```
 
 
-### Discrepancies between the systems/ Do different point systems alter playoff teams?
+## Discrepancies between the systems/ Do different point systems alter playoff teams?
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 discrepancies_df <- find_playoff_changes(
@@ -963,10 +967,10 @@ discrepancies_df %>%
 
 ```
 
-## 2013-2014 Playoff Standings
+# 2013-2014 Playoff Standings
 
-### 2 Point System (current NHL system)
-#### 1 point for overtime loss, 2 points for a regulation win
+## 2 Point System (current NHL system)
+**1 point for overtime loss, 2 points for a regulation win**
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 wild_card_14_19 %>%
@@ -978,8 +982,8 @@ wild_card_14_19 %>%
 
 ```
 
-### 3 Point System
-#### 1 point for overtime loss, 2 point for overtime win, 3 points for regulation win
+## 3 Point System
+**1 point for overtime loss, 2 point for overtime win, 3 points for regulation win**
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 
@@ -993,8 +997,8 @@ wild_card_14_19 %>%
 ```
 
 
-### Win/Loss Point System
-#### 1 point for regulation or overtime win, 0 points for regulation or overtime loss
+## Win/Loss Point System
+**1 point for regulation or overtime win, 0 points for regulation or overtime loss**
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 wild_card_14_19 %>%
@@ -1006,7 +1010,7 @@ wild_card_14_19 %>%
 ```
 
 
-### Discrepancies between the systems/ Do different point systems alter playoff teams?
+## Discrepancies between the systems/ Do different point systems alter playoff teams?
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 discrepancies_df <- find_playoff_changes(
@@ -1041,7 +1045,7 @@ discrepancies_df %>%
 
 ```
 
-## 2013-2005 Standings
+# 2013-2005 Standings
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 #build function for playoff seeding 2014 - 2019
@@ -1254,10 +1258,10 @@ playoff_table_kable_05_13 <- function(df_in) {
 ```
 
 
-## 2012-2013 Playoff Standings
+# 2012-2013 Playoff Standings
 
-### 2 Point System (current NHL system)
-#### 1 point for overtime loss, 2 points for a regulation win
+## 2 Point System (current NHL system)
+**1 point for overtime loss, 2 points for a regulation win**
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 standings_05_13 %>%
@@ -1269,8 +1273,8 @@ standings_05_13 %>%
 
 ```
 
-### 3 Point System
-#### 1 point for overtime loss, 2 point for overtime win, 3 points for regulation win
+## 3 Point System
+**1 point for overtime loss, 2 point for overtime win, 3 points for regulation win**
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 
@@ -1284,8 +1288,8 @@ standings_05_13 %>%
 ```
 
 
-### Win/Loss Point System
-#### 1 point for regulation or overtime win, 0 points for regulation or overtime loss
+## Win/Loss Point System
+**1 point for regulation or overtime win, 0 points for regulation or overtime loss**
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 standings_05_13 %>%
@@ -1297,7 +1301,7 @@ standings_05_13 %>%
 ```
 
 
-### Discrepancies between the systems/ Do different point systems alter playoff teams?
+## Discrepancies between the systems/ Do different point systems alter playoff teams?
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 discrepancies_df <- find_playoff_changes(
@@ -1332,10 +1336,10 @@ discrepancies_df %>%
 
 ```
 
-## 2011-2012 Playoff Standings
+# 2011-2012 Playoff Standings
 
-### 2 Point System (current NHL system)
-#### 1 point for overtime loss, 2 points for a regulation win
+## 2 Point System (current NHL system)
+**1 point for overtime loss, 2 points for a regulation win**
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 standings_05_13 %>%
@@ -1347,8 +1351,8 @@ standings_05_13 %>%
 
 ```
 
-### 3 Point System
-#### 1 point for overtime loss, 2 point for overtime win, 3 points for regulation win
+## 3 Point System
+**1 point for overtime loss, 2 point for overtime win, 3 points for regulation win**
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 
@@ -1362,8 +1366,8 @@ standings_05_13 %>%
 ```
 
 
-### Win/Loss Point System
-#### 1 point for regulation or overtime win, 0 points for regulation or overtime loss
+## Win/Loss Point System
+**1 point for regulation or overtime win, 0 points for regulation or overtime loss**
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 standings_05_13 %>%
@@ -1375,7 +1379,7 @@ standings_05_13 %>%
 ```
 
 
-### Discrepancies between the systems/ Do different point systems alter playoff teams?
+## Discrepancies between the systems/ Do different point systems alter playoff teams?
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 discrepancies_df <- find_playoff_changes(
@@ -1410,10 +1414,10 @@ discrepancies_df %>%
 
 ```
 
-## 2010-2011 Playoff Standings
+# 2010-2011 Playoff Standings
 
-### 2 Point System (current NHL system)
-#### 1 point for overtime loss, 2 points for a regulation win
+## 2 Point System (current NHL system)
+**1 point for overtime loss, 2 points for a regulation win**
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 standings_05_13 %>%
@@ -1425,8 +1429,8 @@ standings_05_13 %>%
 
 ```
 
-### 3 Point System
-#### 1 point for overtime loss, 2 point for overtime win, 3 points for regulation win
+## 3 Point System
+**1 point for overtime loss, 2 point for overtime win, 3 points for regulation win**
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 
@@ -1440,8 +1444,8 @@ standings_05_13 %>%
 ```
 
 
-### Win/Loss Point System
-#### 1 point for regulation or overtime win, 0 points for regulation or overtime loss
+## Win/Loss Point System
+**1 point for regulation or overtime win, 0 points for regulation or overtime loss**
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 standings_05_13 %>%
@@ -1453,7 +1457,7 @@ standings_05_13 %>%
 ```
 
 
-### Discrepancies between the systems/ Do different point systems alter playoff teams?
+## Discrepancies between the systems/ Do different point systems alter playoff teams?
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 discrepancies_df <- find_playoff_changes(
@@ -1488,10 +1492,10 @@ discrepancies_df %>%
 
 ```
 
-## 2009-2010 Playoff Standings
+# 2009-2010 Playoff Standings
 
-### 2 Point System (current NHL system)
-#### 1 point for overtime loss, 2 points for a regulation win
+## 2 Point System (current NHL system)
+**1 point for overtime loss, 2 points for a regulation win**
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 standings_05_13 %>%
@@ -1503,8 +1507,8 @@ standings_05_13 %>%
 
 ```
 
-### 3 Point System
-#### 1 point for overtime loss, 2 point for overtime win, 3 points for regulation win
+## 3 Point System
+**1 point for overtime loss, 2 point for overtime win, 3 points for regulation win**
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 
@@ -1518,8 +1522,8 @@ standings_05_13 %>%
 ```
 
 
-### Win/Loss Point System
-#### 1 point for regulation or overtime win, 0 points for regulation or overtime loss
+## Win/Loss Point System
+**1 point for regulation or overtime win, 0 points for regulation or overtime loss**
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 standings_05_13 %>%
@@ -1531,7 +1535,7 @@ standings_05_13 %>%
 ```
 
 
-### Discrepancies between the systems/ Do different point systems alter playoff teams?
+## Discrepancies between the systems/ Do different point systems alter playoff teams?
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 discrepancies_df <- find_playoff_changes(
@@ -1566,10 +1570,10 @@ discrepancies_df %>%
 
 ```
 
-## 2008-2009 Playoff Standings
+# 2008-2009 Playoff Standings
 
-### 2 Point System (current NHL system)
-#### 1 point for overtime loss, 2 points for a regulation win
+## 2 Point System (current NHL system)
+**1 point for overtime loss, 2 points for a regulation win**
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 standings_05_13 %>%
@@ -1581,8 +1585,8 @@ standings_05_13 %>%
 
 ```
 
-### 3 Point System
-#### 1 point for overtime loss, 2 point for overtime win, 3 points for regulation win
+## 3 Point System
+**1 point for overtime loss, 2 point for overtime win, 3 points for regulation win**
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 
@@ -1596,8 +1600,8 @@ standings_05_13 %>%
 ```
 
 
-### Win/Loss Point System
-#### 1 point for regulation or overtime win, 0 points for regulation or overtime loss
+## Win/Loss Point System
+**1 point for regulation or overtime win, 0 points for regulation or overtime loss**
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 standings_05_13 %>%
@@ -1609,7 +1613,7 @@ standings_05_13 %>%
 ```
 
 
-### Discrepancies between the systems/ Do different point systems alter playoff teams?
+**Discrepancies between the systems/ Do different point systems alter playoff teams?**
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 discrepancies_df <- find_playoff_changes(
@@ -1644,10 +1648,10 @@ discrepancies_df %>%
 
 ```
 
-## 2007-2008 Playoff Standings
+# 2007-2008 Playoff Standings
 
-### 2 Point System (current NHL system)
-#### 1 point for overtime loss, 2 points for a regulation win
+## 2 Point System (current NHL system)
+**1 point for overtime loss, 2 points for a regulation win**
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 standings_05_13 %>%
@@ -1659,8 +1663,8 @@ standings_05_13 %>%
 
 ```
 
-### 3 Point System
-#### 1 point for overtime loss, 2 point for overtime win, 3 points for regulation win
+## 3 Point System
+**1 point for overtime loss, 2 point for overtime win, 3 points for regulation win**
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 
@@ -1674,8 +1678,8 @@ standings_05_13 %>%
 ```
 
 
-### Win/Loss Point System
-#### 1 point for regulation or overtime win, 0 points for regulation or overtime loss
+## Win/Loss Point System
+**1 point for regulation or overtime win, 0 points for regulation or overtime loss**
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 standings_05_13 %>%
@@ -1687,7 +1691,7 @@ standings_05_13 %>%
 ```
 
 
-### Discrepancies between the systems/ Do different point systems alter playoff teams?
+## Discrepancies between the systems/ Do different point systems alter playoff teams?
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 discrepancies_df <- find_playoff_changes(
@@ -1722,9 +1726,9 @@ discrepancies_df %>%
 
 ```
 
-## 2006-2007 Playoff Standings
-### 2 Point System (current NHL system)
-#### 1 point for overtime loss, 2 points for a regulation win
+# 2006-2007 Playoff Standings
+## 2 Point System (current NHL system)
+**1 point for overtime loss, 2 points for a regulation win**
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 standings_05_13 %>%
@@ -1736,8 +1740,8 @@ standings_05_13 %>%
 
 ```
 
-### 3 Point System
-#### 1 point for overtime loss, 2 point for overtime win, 3 points for regulation win
+## 3 Point System
+**1 point for overtime loss, 2 point for overtime win, 3 points for regulation win**
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 
@@ -1751,8 +1755,8 @@ standings_05_13 %>%
 ```
 
 
-### Win/Loss Point System
-#### 1 point for regulation or overtime win, 0 points for regulation or overtime loss
+## Win/Loss Point System
+**1 point for regulation or overtime win, 0 points for regulation or overtime loss**
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 standings_05_13 %>%
@@ -1764,7 +1768,7 @@ standings_05_13 %>%
 ```
 
 
-### Discrepancies between the systems/ Do different point systems alter playoff teams?
+## Discrepancies between the systems/ Do different point systems alter playoff teams?
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 discrepancies_df <- find_playoff_changes(
@@ -1799,10 +1803,10 @@ discrepancies_df %>%
 
 ```
 
-## 2005-2006 Playoff Standings
+# 2005-2006 Playoff Standings
 
-### 2 Point System (current NHL system)
-#### 1 point for overtime loss, 2 points for a regulation win
+## 2 Point System (current NHL system)
+**1 point for overtime loss, 2 points for a regulation win**
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 standings_05_13 %>%
@@ -1814,8 +1818,8 @@ standings_05_13 %>%
 
 ```
 
-### 3 Point System
-#### 1 point for overtime loss, 2 point for overtime win, 3 points for regulation win
+## 3 Point System
+**1 point for overtime loss, 2 point for overtime win, 3 points for regulation win**
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 
@@ -1829,8 +1833,8 @@ standings_05_13 %>%
 ```
 
 
-### Win/Loss Point System
-#### 1 point for regulation or overtime win, 0 points for regulation or overtime loss
+## Win/Loss Point System
+**1 point for regulation or overtime win, 0 points for regulation or overtime loss**
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 standings_05_13 %>%
@@ -1842,7 +1846,7 @@ standings_05_13 %>%
 ```
 
 
-### Discrepancies between the systems/ Do different point systems alter playoff teams?
+## Discrepancies between the systems/ Do different point systems alter playoff teams?
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 discrepancies_df <- find_playoff_changes(
