@@ -17,7 +17,6 @@ library(stringr)
 library(reshape2)
 library(kableExtra)
 library(reactable)
-print(.packages())
 
 ```
 
@@ -26,6 +25,8 @@ print(.packages())
 All data was sourced from Hockey-Reference.com
 
 Example -> https://www.hockey-reference.com/leagues/NHL_2021_standings.html
+
+Clean standins table for 2005-2021:
 
 ```{r load_tables, echo = FALSE, warning = FALSE, message = FALSE}
 standings_2020_21 <- read_csv("data/2020_21_standings.csv")
@@ -77,9 +78,10 @@ clean_table <- function(df_in) {
         separate(Overtime, c("ot_wins", "ot_only_losses"), "-") %>%
         mutate(
             ot_wins = as.numeric(ot_wins) + as.numeric(so_wins),
-            wins = as.numeric(wins),
+            wins = as.numeric(wins) - ot_wins,
             losses = as.numeric(losses),
             ot_losses = as.numeric(ot_losses),
+            total_wins = wins + ot_wins,
             year = case_when(
                 column_label == 1 ~ "20_21",
                 column_label == 2 ~ "19_20",
@@ -106,6 +108,7 @@ clean_table <- function(df_in) {
             losses,
             ot_losses,
             ot_wins,
+            total_wins,
             year
         )
     return(df_out)
@@ -147,9 +150,9 @@ div_conf_long <- cbind(div_conf_long, div_conf_split)
 apply_point_system <- function(df_in) {
     df_out <- df_in %>%
         mutate(
-            points_2 = (2 * wins) + (1 * ot_losses),
+            points_2 = (2 * total_wins) + (1 * ot_losses),
             points_3 = (3 * wins) + (2 * ot_wins) + (1 * ot_losses),
-            points_win_loss = wins + ot_wins
+            points_win_loss = total_wins
         )
     return(df_out)
 }
@@ -181,17 +184,17 @@ set_2020_2021_playoff_teams <- function(df_in) {
             div_order_p2 = order(
                 order(
                     points_2,
-                    wins,
+                    total_wins,
                     decreasing = TRUE)),
             div_order_p3 = order(
                 order(
                     points_3,
-                    wins,
+                    total_wins,
                     decreasing = TRUE)),
             div_order_win_loss = order(
                 order(
                     points_win_loss,
-                    wins,
+                    total_wins,
                     decreasing = TRUE)),
             playoff_p2 = if_else(div_order_p2 <= 4, "yes", "no"),
             playoff_p3 = if_else(div_order_p3 <= 4, "yes", "no"),
@@ -225,6 +228,7 @@ playoff_table_select <- function(df_in,
             losses,
             ot_losses,
             ot_wins,
+            total_wins,
             !!points_field,
             !!playoff_field) %>%
         arrange(
@@ -237,6 +241,7 @@ playoff_table_select <- function(df_in,
             "Losses" = losses,
             "OT Losses" = ot_losses,
             "OT Wins" = ot_wins,
+            "Total Wins" = total_wins,
             "Points Earned" = !!points_field,
             "Playoff Birth Earned" = !!playoff_field
         )
@@ -278,7 +283,7 @@ playoff_table_kable_20_21 <- function(df_in) {
 find_playoff_changes <- function(df_in) {
     df_out <- df_in %>%
         filter(
-            playoff_p2 != playoff_p3 | 
+            playoff_p2 != playoff_p3 |
             playoff_p2 != playoff_win_loss |
             playoff_win_loss != playoff_p3
         )
@@ -342,6 +347,7 @@ discrepancies_df %>%
         losses,
         ot_losses,
         ot_wins,
+        total_wins,
         points_2,
         points_3,
         points_win_loss,
@@ -354,7 +360,9 @@ discrepancies_df %>%
         bootstrap_options = c(
             "striped",
             "hover",
-            "responsive"))
+            "responsive"),
+        fixed_thead = T) %>%
+    scroll_box(width = "1000px")
 
 ```
 
@@ -371,28 +379,28 @@ set_2019_2020_playoff_teams <- function(df_in) {
         ) %>%
         mutate(
             point_percent_2 = points_2 /
-            ((wins + losses + ot_losses) * 2),
+            ((total_wins + losses + ot_losses) * 2),
             point_percent_3 = points_3 /
-            ((wins + losses + ot_losses) * 3),
+            ((total_wins + losses + ot_losses) * 3),
             point_percent_wl = points_win_loss /
-            (wins + losses + ot_losses)      # nolint
+            (total_wins + losses + ot_losses)      # nolint
         ) %>%
         group_by(group) %>%
         mutate(
             div_order_pp2 = order(
                 order(
                     point_percent_2,
-                    wins,
+                    total_wins,
                     decreasing = TRUE)),
             div_order_pp3 = order(
                 order(
                     point_percent_3,
-                    wins,
+                    total_wins,
                     decreasing = TRUE)),
             div_order_ppwl = order(
                 order(
                     point_percent_wl,
-                    wins,
+                    total_wins,
                     decreasing = TRUE)),
             playoff_pp2 = if_else(div_order_pp2 <= 12, "yes", "no"),
             playoff_pp3 = if_else(div_order_pp3 <= 12, "yes", "no"),
@@ -417,6 +425,7 @@ playoff_table_select_19_20 <- function(df_in,
             losses,
             ot_losses,
             ot_wins,
+            total_wins,
             !!points_field,
             !!pp_field,
             !!playoff_field) %>%
@@ -430,6 +439,7 @@ playoff_table_select_19_20 <- function(df_in,
             "Losses" = losses,
             "OT Losses" = ot_losses,
             "OT Wins" = ot_wins,
+            "Total Wins" = total_wins,
             "Points Earned" = !!points_field,
             "Points Percentage" = !!pp_field,
             "Playoff Birth Earned" = !!playoff_field
@@ -450,7 +460,8 @@ playoff_table_kable_19_20 <- function(df_in) {
             bootstrap_options = c(
                 "striped",
                 "hover",
-                "responsive")) %>%
+                "responsive"),
+                fixed_thead = T) %>%
         pack_rows(
             index = c(
                 "East" = east_count,
@@ -532,6 +543,7 @@ discrepancies_df %>%
         losses,
         ot_losses,
         ot_wins,
+        total_wins,
         points_2,
         point_percent_2,
         points_3,
@@ -547,7 +559,9 @@ discrepancies_df %>%
         bootstrap_options = c(
             "striped",
             "hover",
-            "responsive"))
+            "responsive"),
+        fixed_thead = T) %>%
+    scroll_box(width = "1000px")
 
 ```
 
@@ -576,17 +590,17 @@ set_2014_2019_div_seeding <- function(df_in) {
             div_order_p2 = order(
                 order(
                     points_2,
-                    wins,
+                    total_wins,
                     decreasing = TRUE)),
             div_order_p3 = order(
                 order(
                     points_3,
-                    wins,
+                    total_wins,
                     decreasing = TRUE)),
             div_order_win_loss = order(
                 order(
                     points_win_loss,
-                    wins,
+                    total_wins,
                     decreasing = TRUE)),
             playoff_p2 = if_else(div_order_p2 <= 3, "yes", "no"),
             playoff_p3 = if_else(div_order_p3 <= 3, "yes", "no"),
@@ -619,7 +633,7 @@ set_2014_2019_conf_seeding <- function(df_in,
             conf_order = order(
                 order(
                     !!points_col,
-                    wins,
+                    total_wins,
                     decreasing = TRUE)),
             playoff_col = if_else(conf_order <= 2, "yes", "no"),
         ) %>%
@@ -738,7 +752,8 @@ playoff_table_kable_14_19 <- function(df_in) {
             bootstrap_options = c(
                 "striped",
                 "hover",
-                "responsive")) %>%
+                "responsive"),
+                fixed_thead = T) %>%
         pack_rows(
             index = c(
                 "Atlantic" = atlantic_count,
@@ -812,6 +827,7 @@ discrepancies_df %>%
         losses,
         ot_losses,
         ot_wins,
+        total_wins,
         points_2,
         points_3,
         points_win_loss,
@@ -824,7 +840,9 @@ discrepancies_df %>%
         bootstrap_options = c(
             "striped",
             "hover",
-            "responsive"))
+            "responsive"),
+        fixed_thead = T) %>%
+    scroll_box(width = "1000px")
 
 ```
 
@@ -891,6 +909,7 @@ discrepancies_df %>%
         losses,
         ot_losses,
         ot_wins,
+        total_wins,
         points_2,
         points_3,
         points_win_loss,
@@ -903,7 +922,9 @@ discrepancies_df %>%
         bootstrap_options = c(
             "striped",
             "hover",
-            "responsive"))
+            "responsive"),
+        fixed_thead = T) %>%
+    scroll_box(width = "1000px")
 
 ```
 
@@ -970,6 +991,7 @@ discrepancies_df %>%
         losses,
         ot_losses,
         ot_wins,
+        total_wins,
         points_2,
         points_3,
         points_win_loss,
@@ -982,7 +1004,9 @@ discrepancies_df %>%
         bootstrap_options = c(
             "striped",
             "hover",
-            "responsive"))
+            "responsive"),
+        fixed_thead = T) %>%
+    scroll_box(width = "1000px")
 
 ```
 
@@ -1048,6 +1072,7 @@ discrepancies_df %>%
         losses,
         ot_losses,
         ot_wins,
+        total_wins,
         points_2,
         points_3,
         points_win_loss,
@@ -1060,7 +1085,9 @@ discrepancies_df %>%
         bootstrap_options = c(
             "striped",
             "hover",
-            "responsive"))
+            "responsive"),
+        fixed_thead = T) %>%
+    scroll_box(width = "1000px")
 
 ```
 
@@ -1127,6 +1154,7 @@ discrepancies_df %>%
         losses,
         ot_losses,
         ot_wins,
+        total_wins,
         points_2,
         points_3,
         points_win_loss,
@@ -1139,7 +1167,9 @@ discrepancies_df %>%
         bootstrap_options = c(
             "striped",
             "hover",
-            "responsive"))
+            "responsive"),
+        fixed_thead = T) %>%
+    scroll_box(width = "1000px")
 
 ```
 
@@ -1205,6 +1235,7 @@ discrepancies_df %>%
         losses,
         ot_losses,
         ot_wins,
+        total_wins,
         points_2,
         points_3,
         points_win_loss,
@@ -1217,7 +1248,9 @@ discrepancies_df %>%
         bootstrap_options = c(
             "striped",
             "hover",
-            "responsive"))
+            "responsive"),
+        fixed_thead = T) %>%
+    scroll_box(width = "1000px")
 
 ```
 
@@ -1247,17 +1280,17 @@ set_2005_2013_div_seeding <- function(df_in) {
             div_order_p2 = order(
                 order(
                     points_2,
-                    wins,
+                    total_wins,
                     decreasing = TRUE)),
             div_order_p3 = order(
                 order(
                     points_3,
-                    wins,
+                    total_wins,
                     decreasing = TRUE)),
             div_order_win_loss = order(
                 order(
                     points_win_loss,
-                    wins,
+                    total_wins,
                     decreasing = TRUE)),
             playoff_p2 = if_else(div_order_p2 == 1, "yes", "no"),
             playoff_p3 = if_else(div_order_p3 == 1, "yes", "no"),
@@ -1292,7 +1325,7 @@ set_2005_2013_conf_seeding <- function(df_in,
             conf_order = order(
                 order(
                     !!points_col,
-                    wins,
+                    total_wins,
                     decreasing = TRUE)),
             playoff_col = if_else(conf_order <= 5, "yes", "no"),
         ) %>%
@@ -1396,12 +1429,6 @@ standings_05_13 <- merge(merged_standings_points_div, standings_p2_05_13, by = c
 standings_05_13 <- merge(standings_05_13, standings_p3_05_13, by = c("Team", "year"))
 standings_05_13 <- merge(standings_05_13, standings_wl_05_13, by = c("Team", "year"))
 
-test <- playoff_table_select(
-    standings_05_13,
-    quo(points_2),
-    quo(playoff_p2),
-    year_filter = "12_13")
-
 playoff_table_kable_05_13 <- function(df_in) {
     pacific_count <- get_div_team_count(df_in, "Pacific")
     northwest_count <- get_div_team_count(df_in, "Northwest")
@@ -1419,7 +1446,8 @@ playoff_table_kable_05_13 <- function(df_in) {
             bootstrap_options = c(
                 "striped",
                 "hover",
-                "responsive")) %>%
+                "responsive"),
+                fixed_thead = T) %>%
         pack_rows(
             index = c(
                 "Atlantic" = atlantic_count,
@@ -1496,6 +1524,7 @@ discrepancies_df %>%
         losses,
         ot_losses,
         ot_wins,
+        total_wins,
         points_2,
         points_3,
         points_win_loss,
@@ -1508,7 +1537,9 @@ discrepancies_df %>%
         bootstrap_options = c(
             "striped",
             "hover",
-            "responsive"))
+            "responsive"),
+        fixed_thead = T) %>%
+    scroll_box(width = "1000px") 
 
 ```
 
@@ -1574,6 +1605,7 @@ discrepancies_df %>%
         losses,
         ot_losses,
         ot_wins,
+        total_wins,
         points_2,
         points_3,
         points_win_loss,
@@ -1586,7 +1618,9 @@ discrepancies_df %>%
         bootstrap_options = c(
             "striped",
             "hover",
-            "responsive"))
+            "responsive"),
+        fixed_thead = T) %>%
+    scroll_box(width = "1000px")
 
 ```
 
@@ -1652,6 +1686,7 @@ discrepancies_df %>%
         losses,
         ot_losses,
         ot_wins,
+        total_wins,
         points_2,
         points_3,
         points_win_loss,
@@ -1664,7 +1699,9 @@ discrepancies_df %>%
         bootstrap_options = c(
             "striped",
             "hover",
-            "responsive"))
+            "responsive"),
+        fixed_thead = T) %>%
+    scroll_box(width = "1000px")
 
 ```
 
@@ -1730,6 +1767,7 @@ discrepancies_df %>%
         losses,
         ot_losses,
         ot_wins,
+        total_wins,
         points_2,
         points_3,
         points_win_loss,
@@ -1742,8 +1780,10 @@ discrepancies_df %>%
         bootstrap_options = c(
             "striped",
             "hover",
-            "responsive"))
-
+            "responsive"),
+        fixed_thead = T) %>%
+    scroll_box(width = "1000px")
+ 
 ```
 
 # 2008-2009 Playoff Standings
@@ -1808,6 +1848,7 @@ discrepancies_df %>%
         losses,
         ot_losses,
         ot_wins,
+        total_wins,
         points_2,
         points_3,
         points_win_loss,
@@ -1820,7 +1861,9 @@ discrepancies_df %>%
         bootstrap_options = c(
             "striped",
             "hover",
-            "responsive"))
+            "responsive"),
+        fixed_thead = T) %>%
+    scroll_box(width = "1000px")
 
 ```
 
@@ -1886,6 +1929,7 @@ discrepancies_df %>%
         losses,
         ot_losses,
         ot_wins,
+        total_wins,
         points_2,
         points_3,
         points_win_loss,
@@ -1898,7 +1942,9 @@ discrepancies_df %>%
         bootstrap_options = c(
             "striped",
             "hover",
-            "responsive"))
+            "responsive"),
+        fixed_thead = T) %>%
+    scroll_box(width = "1000px")
 
 ```
 
@@ -1963,6 +2009,7 @@ discrepancies_df %>%
         losses,
         ot_losses,
         ot_wins,
+        total_wins,
         points_2,
         points_3,
         points_win_loss,
@@ -1975,7 +2022,9 @@ discrepancies_df %>%
         bootstrap_options = c(
             "striped",
             "hover",
-            "responsive"))
+            "responsive"),
+        fixed_thead = T) %>%
+    scroll_box(width = "1000px")
 
 ```
 
@@ -2041,6 +2090,7 @@ discrepancies_df %>%
         losses,
         ot_losses,
         ot_wins,
+        total_wins,
         points_2,
         points_3,
         points_win_loss,
@@ -2053,6 +2103,8 @@ discrepancies_df %>%
         bootstrap_options = c(
             "striped",
             "hover",
-            "responsive"))
+            "responsive"),
+        fixed_thead = T) %>%
+    scroll_box(width = "1000px")
 
 ```
