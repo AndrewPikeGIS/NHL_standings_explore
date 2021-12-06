@@ -865,33 +865,7 @@ discrepancies_df <- find_playoff_changes(
 )
 
 discrepancies_df %>%
-    filter(
-        year == "18_19" &
-        group_level == "div"
-    ) %>%
-    select(
-        Team,
-        group,
-        wins,
-        losses,
-        ot_losses,
-        ot_wins,
-        total_wins,
-        points_2,
-        points_3,
-        points_win_loss,
-        playoff_p2,
-        playoff_p3,
-        playoff_win_loss
-    ) %>%
-    kable() %>%
-    kable_styling(
-        bootstrap_options = c(
-            "striped",
-            "hover",
-            "responsive"),
-        fixed_thead = T) %>%
-    scroll_box(width = "1000px")
+    discrepancies_kable(year_in = "18_19", group_in = "div")
 
 ```
 
@@ -942,38 +916,8 @@ wild_card_14_19 %>%
 ## Discrepancies between the systems/ Do different point systems alter playoff teams?
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
-discrepancies_df <- find_playoff_changes(
-    wild_card_14_19
-)
-
 discrepancies_df %>%
-    filter(
-        year == "17_18" &
-        group_level == "div"
-    ) %>%
-    select(
-        Team,
-        group,
-        wins,
-        losses,
-        ot_losses,
-        ot_wins,
-        total_wins,
-        points_2,
-        points_3,
-        points_win_loss,
-        playoff_p2,
-        playoff_p3,
-        playoff_win_loss
-    ) %>%
-    kable() %>%
-    kable_styling(
-        bootstrap_options = c(
-            "striped",
-            "hover",
-            "responsive"),
-        fixed_thead = T) %>%
-    scroll_box(width = "1000px")
+    discrepancies_kable(year_in = "17_18", group_in = "div")
 
 ```
 
@@ -1029,33 +973,7 @@ discrepancies_df <- find_playoff_changes(
 )
 
 discrepancies_df %>%
-    filter(
-        year == "16_17" &
-        group_level == "div"
-    ) %>%
-    select(
-        Team,
-        group,
-        wins,
-        losses,
-        ot_losses,
-        ot_wins,
-        total_wins,
-        points_2,
-        points_3,
-        points_win_loss,
-        playoff_p2,
-        playoff_p3,
-        playoff_win_loss
-    ) %>%
-    kable() %>%
-    kable_styling(
-        bootstrap_options = c(
-            "striped",
-            "hover",
-            "responsive"),
-        fixed_thead = T) %>%
-    scroll_box(width = "1000px")
+    discrepancies_kable(year_in = "16_17", group_in = "div")
 
 ```
 
@@ -1110,33 +1028,7 @@ discrepancies_df <- find_playoff_changes(
 )
 
 discrepancies_df %>%
-    filter(
-        year == "15_16" &
-        group_level == "div"
-    ) %>%
-    select(
-        Team,
-        group,
-        wins,
-        losses,
-        ot_losses,
-        ot_wins,
-        total_wins,
-        points_2,
-        points_3,
-        points_win_loss,
-        playoff_p2,
-        playoff_p3,
-        playoff_win_loss
-    ) %>%
-    kable() %>%
-    kable_styling(
-        bootstrap_options = c(
-            "striped",
-            "hover",
-            "responsive"),
-        fixed_thead = T) %>%
-    scroll_box(width = "1000px")
+    discrepancies_kable(year_in = "15_16", group_in = "div")
 
 ```
 
@@ -1192,33 +1084,7 @@ discrepancies_df <- find_playoff_changes(
 )
 
 discrepancies_df %>%
-    filter(
-        year == "14_15" &
-        group_level == "div"
-    ) %>%
-    select(
-        Team,
-        group,
-        wins,
-        losses,
-        ot_losses,
-        ot_wins,
-        total_wins,
-        points_2,
-        points_3,
-        points_win_loss,
-        playoff_p2,
-        playoff_p3,
-        playoff_win_loss
-    ) %>%
-    kable() %>%
-    kable_styling(
-        bootstrap_options = c(
-            "striped",
-            "hover",
-            "responsive"),
-        fixed_thead = T) %>%
-    scroll_box(width = "1000px")
+    discrepancies_kable(year_in = "14_15", group_in = "div")
 
 ```
 
@@ -1273,33 +1139,7 @@ discrepancies_df <- find_playoff_changes(
 )
 
 discrepancies_df %>%
-    filter(
-        year == "13_14" &
-        group_level == "div"
-    ) %>%
-    select(
-        Team,
-        group,
-        wins,
-        losses,
-        ot_losses,
-        ot_wins,
-        total_wins,
-        points_2,
-        points_3,
-        points_win_loss,
-        playoff_p2,
-        playoff_p3,
-        playoff_win_loss
-    ) %>%
-    kable() %>%
-    kable_styling(
-        bootstrap_options = c(
-            "striped",
-            "hover",
-            "responsive"),
-        fixed_thead = T) %>%
-    scroll_box(width = "1000px")
+    discrepancies_kable(year_in = "13_14", group_in = "div")
 
 ```
 
@@ -1562,33 +1402,7 @@ discrepancies_df <- find_playoff_changes(
 )
 
 discrepancies_df %>%
-    filter(
-        year == "12_13" &
-        group_level == "div"
-    ) %>%
-    select(
-        Team,
-        group,
-        wins,
-        losses,
-        ot_losses,
-        ot_wins,
-        total_wins,
-        points_2,
-        points_3,
-        points_win_loss,
-        playoff_p2,
-        playoff_p3,
-        playoff_win_loss
-    ) %>%
-    kable() %>%
-    kable_styling(
-        bootstrap_options = c(
-            "striped",
-            "hover",
-            "responsive"),
-        fixed_thead = T) %>%
-    scroll_box(width = "1000px") 
+    discrepancies_kable(year_in = "12_13", group_in = "div")
 
 ```
 
@@ -1638,38 +1452,8 @@ standings_05_13 %>%
 ## Discrepancies between the systems/ Do different point systems alter playoff teams?
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
-discrepancies_df <- find_playoff_changes(
-    standings_05_13
-)
-
 discrepancies_df %>%
-    filter(
-        year == "11_12" &
-        group_level == "div"
-    ) %>%
-    select(
-        Team,
-        group,
-        wins,
-        losses,
-        ot_losses,
-        ot_wins,
-        total_wins,
-        points_2,
-        points_3,
-        points_win_loss,
-        playoff_p2,
-        playoff_p3,
-        playoff_win_loss
-    ) %>%
-    kable() %>%
-    kable_styling(
-        bootstrap_options = c(
-            "striped",
-            "hover",
-            "responsive"),
-        fixed_thead = T) %>%
-    scroll_box(width = "1000px")
+    discrepancies_kable(year_in = "11_12", group_in = "div")
 
 ```
 
@@ -1719,38 +1503,9 @@ standings_05_13 %>%
 ## Discrepancies between the systems/ Do different point systems alter playoff teams?
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
-discrepancies_df <- find_playoff_changes(
-    standings_05_13
-)
 
 discrepancies_df %>%
-    filter(
-        year == "10_11" &
-        group_level == "div"
-    ) %>%
-    select(
-        Team,
-        group,
-        wins,
-        losses,
-        ot_losses,
-        ot_wins,
-        total_wins,
-        points_2,
-        points_3,
-        points_win_loss,
-        playoff_p2,
-        playoff_p3,
-        playoff_win_loss
-    ) %>%
-    kable() %>%
-    kable_styling(
-        bootstrap_options = c(
-            "striped",
-            "hover",
-            "responsive"),
-        fixed_thead = T) %>%
-    scroll_box(width = "1000px")
+    discrepancies_kable(year_in = "10_11", group_in = "div")
 
 ```
 
@@ -1800,38 +1555,8 @@ standings_05_13 %>%
 ## Discrepancies between the systems/ Do different point systems alter playoff teams?
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
-discrepancies_df <- find_playoff_changes(
-    standings_05_13
-)
-
 discrepancies_df %>%
-    filter(
-        year == "09_10" &
-        group_level == "div"
-    ) %>%
-    select(
-        Team,
-        group,
-        wins,
-        losses,
-        ot_losses,
-        ot_wins,
-        total_wins,
-        points_2,
-        points_3,
-        points_win_loss,
-        playoff_p2,
-        playoff_p3,
-        playoff_win_loss
-    ) %>%
-    kable() %>%
-    kable_styling(
-        bootstrap_options = c(
-            "striped",
-            "hover",
-            "responsive"),
-        fixed_thead = T) %>%
-    scroll_box(width = "1000px")
+    discrepancies_kable(year_in = "09_10", group_in = "div")
  
 ```
 
@@ -1881,38 +1606,8 @@ standings_05_13 %>%
 **Discrepancies between the systems/ Do different point systems alter playoff teams?**
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
-discrepancies_df <- find_playoff_changes(
-    standings_05_13
-)
-
 discrepancies_df %>%
-    filter(
-        year == "08_09" &
-        group_level == "div"
-    ) %>%
-    select(
-        Team,
-        group,
-        wins,
-        losses,
-        ot_losses,
-        ot_wins,
-        total_wins,
-        points_2,
-        points_3,
-        points_win_loss,
-        playoff_p2,
-        playoff_p3,
-        playoff_win_loss
-    ) %>%
-    kable() %>%
-    kable_styling(
-        bootstrap_options = c(
-            "striped",
-            "hover",
-            "responsive"),
-        fixed_thead = T) %>%
-    scroll_box(width = "1000px")
+    discrepancies_kable(year_in = "09_08", group_in = "div")
 
 ```
 
@@ -1962,38 +1657,8 @@ standings_05_13 %>%
 ## Discrepancies between the systems/ Do different point systems alter playoff teams?
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
-discrepancies_df <- find_playoff_changes(
-    standings_05_13
-)
-
 discrepancies_df %>%
-    filter(
-        year == "07_08" &
-        group_level == "div"
-    ) %>%
-    select(
-        Team,
-        group,
-        wins,
-        losses,
-        ot_losses,
-        ot_wins,
-        total_wins,
-        points_2,
-        points_3,
-        points_win_loss,
-        playoff_p2,
-        playoff_p3,
-        playoff_win_loss
-    ) %>%
-    kable() %>%
-    kable_styling(
-        bootstrap_options = c(
-            "striped",
-            "hover",
-            "responsive"),
-        fixed_thead = T) %>%
-    scroll_box(width = "1000px")
+    discrepancies_kable(year_in = "07_08", group_in = "div")
 
 ```
 
@@ -2042,38 +1707,8 @@ standings_05_13 %>%
 ## Discrepancies between the systems/ Do different point systems alter playoff teams?
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
-discrepancies_df <- find_playoff_changes(
-    standings_05_13
-)
-
 discrepancies_df %>%
-    filter(
-        year == "06_07" &
-        group_level == "div"
-    ) %>%
-    select(
-        Team,
-        group,
-        wins,
-        losses,
-        ot_losses,
-        ot_wins,
-        total_wins,
-        points_2,
-        points_3,
-        points_win_loss,
-        playoff_p2,
-        playoff_p3,
-        playoff_win_loss
-    ) %>%
-    kable() %>%
-    kable_styling(
-        bootstrap_options = c(
-            "striped",
-            "hover",
-            "responsive"),
-        fixed_thead = T) %>%
-    scroll_box(width = "1000px")
+    discrepancies_kable(year_in = "06_07", group_in = "div")
 
 ```
 
@@ -2123,37 +1758,8 @@ standings_05_13 %>%
 ## Discrepancies between the systems/ Do different point systems alter playoff teams?
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
-discrepancies_df <- find_playoff_changes(
-    standings_05_13
-)
 
 discrepancies_df %>%
-    filter(
-        year == "05_06" &
-        group_level == "div"
-    ) %>%
-    select(
-        Team,
-        group,
-        wins,
-        losses,
-        ot_losses,
-        ot_wins,
-        total_wins,
-        points_2,
-        points_3,
-        points_win_loss,
-        playoff_p2,
-        playoff_p3,
-        playoff_win_loss
-    ) %>%
-    kable() %>%
-    kable_styling(
-        bootstrap_options = c(
-            "striped",
-            "hover",
-            "responsive"),
-        fixed_thead = T) %>%
-    scroll_box(width = "1000px")
+   discrepancies_kable(year_in = "05_06", group_in = "div")
 
 ```
