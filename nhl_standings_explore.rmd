@@ -146,7 +146,7 @@ div_conf_long <- cbind(div_conf_long, div_conf_split)
 
 ```
 
-```{r, echo = FALSE, warning = FALSE, message = FALSE}
+```{r apply_point_schemas, echo = FALSE, warning = FALSE, message = FALSE}
 apply_point_system <- function(df_in) {
     df_out <- df_in %>%
         mutate(
@@ -291,6 +291,55 @@ find_playoff_changes <- function(df_in) {
     return(df_out)
 }
 
+discrepancies_kable <- function(
+    discrepancies_df,
+    year_in = "20_21",
+    group_in = "div") {
+
+    discrepancies_df %>%
+        filter(
+            year == year_in &
+            group_level == group_in
+        ) %>%
+        select(
+            Team,
+            group,
+            wins,
+            losses,
+            ot_losses,
+            ot_wins,
+            total_wins,
+            points_2,
+            points_3,
+            points_win_loss,
+            playoff_p2,
+            playoff_p3,
+            playoff_win_loss
+        ) %>%
+        rename(
+            Division = group,
+            Wins = wins,
+            Losses = losses,
+            "OT Losses" = ot_losses,
+            "OT Wins" = ot_wins,
+            "Total Wins" = total_wins,
+            "2 Point System Point Total" = points_2,
+            "3 Point System Point Total" = points_3,
+            "Win/Loss Point System Point Total" = points_win_loss,
+            "Playoff Birth 2 Point System" = playoff_p2,
+            "Playoff Birth 3 Point System" = playoff_p3,
+            "Playoff Birth Win/Loss Point System" = playoff_win_loss
+        ) %>%
+        kable() %>%
+        kable_styling(
+            bootstrap_options = c(
+                "striped",
+                "hover",
+                "responsive"),
+            fixed_thead = T) %>%
+        scroll_box(width = "1000px")
+}
+
 standings_20_21 <- set_2020_2021_playoff_teams(
     merged_standings_points_div
 )
@@ -340,29 +389,7 @@ discrepancies_df <- find_playoff_changes(
 )
 
 discrepancies_df %>%
-    select(
-        Team,
-        group,
-        wins,
-        losses,
-        ot_losses,
-        ot_wins,
-        total_wins,
-        points_2,
-        points_3,
-        points_win_loss,
-        playoff_p2,
-        playoff_p3,
-        playoff_win_loss
-    ) %>%
-    kable() %>%
-    kable_styling(
-        bootstrap_options = c(
-            "striped",
-            "hover",
-            "responsive"),
-        fixed_thead = T) %>%
-    scroll_box(width = "1000px")
+    discrepancies_kable()
 
 ```
 
@@ -480,6 +507,56 @@ find_playoff_changes_19_20 <- function(df_in) {
     return(df_out)
 }
 
+discrepancies_kable_19_20 <- function(discrepancies_df) {
+    discrepancies_df %>%
+        filter(
+            group_level == "conf"
+        ) %>%
+        select(
+            Team,
+            group,
+            wins,
+            losses,
+            ot_losses,
+            ot_wins,
+            total_wins,
+            points_2,
+            point_percent_2,
+            points_3,
+            point_percent_3,
+            points_win_loss,
+            point_percent_wl,
+            playoff_pp2,
+            playoff_pp3,
+            playoff_ppwl
+        ) %>%
+        rename(
+            Conference = group,
+            Wins = wins,
+            Losses = losses,
+            "OT Losses" = ot_losses,
+            "OT Wins" = ot_wins,
+            "Total Wins" = total_wins,
+            "2 Point System Point Total" = points_2,
+            "2 Point System Point %" = point_percent_2,
+            "3 Point System Point Total" = points_3,
+            "3 Point System Point %" = point_percent_3,
+            "Win/Loss Point System Point Total" = points_win_loss,
+            "Win/Loss Point System Point %" = point_percent_wl,
+            "Playoff Birth 2 Point System" = playoff_pp2,
+            "Playoff Birth 3 Point System" = playoff_pp3,
+            "Playoff Birth Win/Loss Point System" = playoff_ppwl
+        ) %>%
+        kable() %>%
+        kable_styling(
+            bootstrap_options = c(
+                "striped",
+                "hover",
+                "responsive"),
+            fixed_thead = T) %>%
+        scroll_box(width = "1000px")
+}
+
 standings_19_20 <- set_2019_2020_playoff_teams(merged_standings_points_div)
 
 ```
@@ -533,35 +610,7 @@ discrepancies_df <- find_playoff_changes_19_20(
 )
 
 discrepancies_df %>%
-    filter(
-        group_level == "conf"
-    ) %>%
-    select(
-        Team,
-        group,
-        wins,
-        losses,
-        ot_losses,
-        ot_wins,
-        total_wins,
-        points_2,
-        point_percent_2,
-        points_3,
-        point_percent_3,
-        points_win_loss,
-        point_percent_wl,
-        playoff_pp2,
-        playoff_pp3,
-        playoff_ppwl
-    ) %>%
-    kable() %>%
-    kable_styling(
-        bootstrap_options = c(
-            "striped",
-            "hover",
-            "responsive"),
-        fixed_thead = T) %>%
-    scroll_box(width = "1000px")
+    discrepancies_kable_19_20()
 
 ```
 
