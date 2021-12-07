@@ -396,9 +396,8 @@ standings_20_21 %>%
 
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
-discrepancies_df_20 <- find_playoff_changes(
-    standings_20_21
-)
+discrepancies_df_20 <- find_playoff_changes(standings_20_21) %>%
+    filter(group_level == "div")
 
 discrepancies_df_20 %>%
     discrepancies_kable()
@@ -621,9 +620,7 @@ standings_19_20 %>%
 ## Discrepancies between the systems/ Do different point systems alter playoff teams?
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
-discrepancies_df_19 <- find_playoff_changes_19_20(
-    standings_19_20
-)
+discrepancies_df_19 <- find_playoff_changes_19_20(standings_19_20)
 
 discrepancies_df_19 %>%
     discrepancies_kable_19_20()
@@ -880,9 +877,8 @@ wild_card_14_19 %>%
 ## Discrepancies between the systems/ Do different point systems alter playoff teams?
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
-discrepancies_df_14 <- find_playoff_changes(
-    wild_card_14_19
-)
+discrepancies_df_14 <- find_playoff_changes(wild_card_14_19) %>%
+    filter(group_level == "div")
 
 discrepancies_df_14 %>%
     discrepancies_kable(year_in = "18_19", group_in = "div")
@@ -1404,9 +1400,8 @@ standings_05_13 %>%
 ## Discrepancies between the systems/ Do different point systems alter playoff teams?
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
-discrepancies_df_05 <- find_playoff_changes(
-    standings_05_13
-)
+discrepancies_df_05 <- find_playoff_changes(standings_05_13) %>%
+    filter(group_level == "div")
 
 discrepancies_df_05 %>%
     discrepancies_kable(year_in = "12_13", group_in = "div")
@@ -1510,7 +1505,6 @@ standings_05_13 %>%
 ## Discrepancies between the systems/ Do different point systems alter playoff teams?
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
-
 discrepancies_df_05 %>%
     discrepancies_kable(year_in = "10_11", group_in = "div")
 
@@ -1772,12 +1766,7 @@ discrepancies_df_05 %>%
 ```
 
 
-# All the Teams/Playoff spots that would Change 
-
-This is a full table of all the changes to playoff seeding that would occur if the point schemas were different.
-
-
-```{r all_discrepancy_tables, echo = FALSE, warning = FALSE, message = FALSE}
+```{r all_discrepancy_table, echo = FALSE, warning = FALSE, message = FALSE}
 discrepancies_kable_all <- function(discrepancies_df) {
     discrepancies_df %>%
         select(
@@ -1804,7 +1793,7 @@ discrepancies_kable_all <- function(discrepancies_df) {
         ) %>%
         rename(
             Year = year,
-            Conference = group,
+            Division = group,
             Wins = wins,
             Losses = losses,
             "OT Losses" = ot_losses,
@@ -1840,6 +1829,29 @@ discrepancies_all <- bind_rows(
     discrepancies_df_05) %>%
     arrange(desc(year), Team)
 
-discrepancies_all %>%
-    discrepancies_kable_all()
+
+```
+
+# All the changes with a 3 point system.
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+discrepancies_3_point <- discrepancies_all %>%
+    filter(
+        playoff_p2 != playoff_p3 |
+        playoff_pp2 != playoff_pp3
+    )
+
+discrepancies_3_point %>% discrepancies_kable_all()
+```
+
+# All the changes with a win/loss system.
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+discrepancies_wl_point <- discrepancies_all %>%
+    filter(
+        playoff_p2 != playoff_win_loss |
+        playoff_pp2 != playoff_ppwl
+    )
+
+discrepancies_wl_point %>% discrepancies_kable_all()
 ```
