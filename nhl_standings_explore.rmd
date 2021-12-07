@@ -146,6 +146,14 @@ div_conf_long <- cbind(div_conf_long, div_conf_split)
 
 ```
 
+# Apply Point Schemas
+
+Three different point schemas are being evaluated. The current two point system employed by the NHL. <br>
+2 points for a regulation or OT/shootout win and 1 point for an OT/shootout loss. A three point system <br>
+where regulations wins are rewarded, 3 points for regulation win, 2 points for OT/shootout win, 1 point<br>
+for an OT/shootout loss. Finally a win/loss system where a single point is awarded for a regulation or <br>
+OT/shootout win and no points for any loss.
+
 ```{r apply_point_schemas, echo = FALSE, warning = FALSE, message = FALSE}
 apply_point_system <- function(df_in) {
     df_out <- df_in %>%
@@ -388,11 +396,11 @@ standings_20_21 %>%
 
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
-discrepancies_df <- find_playoff_changes(
+discrepancies_df_20 <- find_playoff_changes(
     standings_20_21
 )
 
-discrepancies_df %>%
+discrepancies_df_20 %>%
     discrepancies_kable()
 
 ```
@@ -613,11 +621,11 @@ standings_19_20 %>%
 ## Discrepancies between the systems/ Do different point systems alter playoff teams?
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
-discrepancies_df <- find_playoff_changes_19_20(
+discrepancies_df_19 <- find_playoff_changes_19_20(
     standings_19_20
 )
 
-discrepancies_df %>%
+discrepancies_df_19 %>%
     discrepancies_kable_19_20()
 
 ```
@@ -872,11 +880,11 @@ wild_card_14_19 %>%
 ## Discrepancies between the systems/ Do different point systems alter playoff teams?
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
-discrepancies_df <- find_playoff_changes(
+discrepancies_df_14 <- find_playoff_changes(
     wild_card_14_19
 )
 
-discrepancies_df %>%
+discrepancies_df_14 %>%
     discrepancies_kable(year_in = "18_19", group_in = "div")
 
 ```
@@ -928,7 +936,7 @@ wild_card_14_19 %>%
 ## Discrepancies between the systems/ Do different point systems alter playoff teams?
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
-discrepancies_df %>%
+discrepancies_df_14 %>%
     discrepancies_kable(year_in = "17_18", group_in = "div")
 
 ```
@@ -980,11 +988,7 @@ wild_card_14_19 %>%
 ## Discrepancies between the systems/ Do different point systems alter playoff teams?
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
-discrepancies_df <- find_playoff_changes(
-    wild_card_14_19
-)
-
-discrepancies_df %>%
+discrepancies_df_14 %>%
     discrepancies_kable(year_in = "16_17", group_in = "div")
 
 ```
@@ -1035,11 +1039,7 @@ wild_card_14_19 %>%
 ## Discrepancies between the systems/ Do different point systems alter playoff teams?
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
-discrepancies_df <- find_playoff_changes(
-    wild_card_14_19
-)
-
-discrepancies_df %>%
+discrepancies_df_14 %>%
     discrepancies_kable(year_in = "15_16", group_in = "div")
 
 ```
@@ -1091,11 +1091,7 @@ wild_card_14_19 %>%
 ## Discrepancies between the systems/ Do different point systems alter playoff teams?
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
-discrepancies_df <- find_playoff_changes(
-    wild_card_14_19
-)
-
-discrepancies_df %>%
+discrepancies_df_14 %>%
     discrepancies_kable(year_in = "14_15", group_in = "div")
 
 ```
@@ -1146,11 +1142,7 @@ wild_card_14_19 %>%
 ## Discrepancies between the systems/ Do different point systems alter playoff teams?
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
-discrepancies_df <- find_playoff_changes(
-    wild_card_14_19
-)
-
-discrepancies_df %>%
+discrepancies_df_14 %>%
     discrepancies_kable(year_in = "13_14", group_in = "div")
 
 ```
@@ -1412,11 +1404,11 @@ standings_05_13 %>%
 ## Discrepancies between the systems/ Do different point systems alter playoff teams?
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
-discrepancies_df <- find_playoff_changes(
+discrepancies_df_05 <- find_playoff_changes(
     standings_05_13
 )
 
-discrepancies_df %>%
+discrepancies_df_05 %>%
     discrepancies_kable(year_in = "12_13", group_in = "div")
 
 ```
@@ -1467,7 +1459,7 @@ standings_05_13 %>%
 ## Discrepancies between the systems/ Do different point systems alter playoff teams?
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
-discrepancies_df %>%
+discrepancies_df_05 %>%
     discrepancies_kable(year_in = "11_12", group_in = "div")
 
 ```
@@ -1519,7 +1511,7 @@ standings_05_13 %>%
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 
-discrepancies_df %>%
+discrepancies_df_05 %>%
     discrepancies_kable(year_in = "10_11", group_in = "div")
 
 ```
@@ -1570,7 +1562,7 @@ standings_05_13 %>%
 ## Discrepancies between the systems/ Do different point systems alter playoff teams?
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
-discrepancies_df %>%
+discrepancies_df_05 %>%
     discrepancies_kable(year_in = "09_10", group_in = "div")
  
 ```
@@ -1621,7 +1613,7 @@ standings_05_13 %>%
 **Discrepancies between the systems/ Do different point systems alter playoff teams?**
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
-discrepancies_df %>%
+discrepancies_df_05 %>%
     discrepancies_kable(year_in = "09_08", group_in = "div")
 
 ```
@@ -1672,7 +1664,7 @@ standings_05_13 %>%
 ## Discrepancies between the systems/ Do different point systems alter playoff teams?
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
-discrepancies_df %>%
+discrepancies_df_05 %>%
     discrepancies_kable(year_in = "07_08", group_in = "div")
 
 ```
@@ -1722,7 +1714,7 @@ standings_05_13 %>%
 ## Discrepancies between the systems/ Do different point systems alter playoff teams?
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
-discrepancies_df %>%
+discrepancies_df_05 %>%
     discrepancies_kable(year_in = "06_07", group_in = "div")
 
 ```
@@ -1774,7 +1766,80 @@ standings_05_13 %>%
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 
-discrepancies_df %>%
+discrepancies_df_05 %>%
    discrepancies_kable(year_in = "05_06", group_in = "div")
 
+```
+
+
+# All the Teams/Playoff spots that would Change 
+
+This is a full table of all the changes to playoff seeding that would occur if the point schemas were different.
+
+
+```{r all_discrepancy_tables, echo = FALSE, warning = FALSE, message = FALSE}
+discrepancies_kable_all <- function(discrepancies_df) {
+    discrepancies_df %>%
+        select(
+            year,
+            Team,
+            group,
+            wins,
+            losses,
+            ot_losses,
+            ot_wins,
+            total_wins,
+            points_2,
+            points_3,
+            points_win_loss,
+            playoff_p2,
+            playoff_p3,
+            playoff_win_loss,
+            point_percent_2,
+            point_percent_3,
+            point_percent_wl,
+            playoff_pp2,
+            playoff_pp3,
+            playoff_ppwl
+        ) %>%
+        rename(
+            Year = year,
+            Conference = group,
+            Wins = wins,
+            Losses = losses,
+            "OT Losses" = ot_losses,
+            "OT Wins" = ot_wins,
+            "Total Wins" = total_wins,
+            "2 Point System Point Total" = points_2,
+            "3 Point System Point Total" = points_3,
+            "Win/Loss Point System Point Total" = points_win_loss,
+            "Playoff Birth 2 Point System" = playoff_p2,
+            "Playoff Birth 3 Point System" = playoff_p3,
+            "Playoff Birth Win/Loss Point System" = playoff_win_loss,
+            "3 Point System Point %" = point_percent_3,
+            "2 Point System Point %" = point_percent_2,
+            "Win/Loss Point System Point %" = point_percent_wl,
+            "Playoff Birth 2 Point Percent" = playoff_pp2,
+            "Playoff Birth 3 Point Percent" = playoff_pp3,
+            "Playoff Birth Win/Loss Point Percent" = playoff_ppwl
+        ) %>%
+        kable() %>%
+        kable_styling(
+            bootstrap_options = c(
+                "striped",
+                "hover",
+                "responsive"),
+            fixed_thead = T) %>%
+        scroll_box(width = "1000px", height = "600px")
+}
+
+discrepancies_all <- bind_rows(
+    discrepancies_df_20,
+    discrepancies_df_19,
+    discrepancies_df_14,
+    discrepancies_df_05) %>%
+    arrange(desc(year), Team)
+
+discrepancies_all %>%
+    discrepancies_kable_all()
 ```
