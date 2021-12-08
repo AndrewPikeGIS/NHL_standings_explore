@@ -197,12 +197,12 @@ set_2020_2021_playoff_teams <- function(df_in) {
             div_order_p3 = order(
                 order(
                     points_3,
-                    total_wins,
+                    wins,
                     decreasing = TRUE)),
             div_order_win_loss = order(
                 order(
                     points_win_loss,
-                    total_wins,
+                    wins,
                     decreasing = TRUE)),
             playoff_p2 = if_else(div_order_p2 <= 4, "yes", "no"),
             playoff_p3 = if_else(div_order_p3 <= 4, "yes", "no"),
@@ -221,6 +221,7 @@ filter_div <- function(df_in, division) {
 playoff_table_select <- function(df_in,
                                  points_field,
                                  playoff_field,
+                                 wins_col = quo(wins),
                                  year_filter = "20_21") {
 
     df_out <- df_in %>%
@@ -242,7 +243,7 @@ playoff_table_select <- function(df_in,
         arrange(
             group,
             desc(!!points_field),
-            desc(wins)) %>%
+            desc(!!wins_col)) %>%
         rename(
             "Group" = group,
             "Wins" = wins,
@@ -366,7 +367,10 @@ The top four teams in each of the new divisions earned a playoff birth.
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 
 standings_20_21 %>%
-    playoff_table_select(quo(points_2), quo(playoff_p2)) %>%
+    playoff_table_select(
+        quo(points_2),
+        quo(playoff_p2),
+        quo(total_wins)) %>%
     playoff_table_kable_20_21()
 
 ```
@@ -377,7 +381,9 @@ standings_20_21 %>%
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 
 standings_20_21 %>%
-    playoff_table_select(quo(points_3), quo(playoff_p3)) %>%
+    playoff_table_select(
+        quo(points_3),
+        quo(playoff_p3)) %>%
     playoff_table_kable_20_21()
 
 ```
@@ -437,12 +443,12 @@ set_2019_2020_playoff_teams <- function(df_in) {
             div_order_pp3 = order(
                 order(
                     point_percent_3,
-                    total_wins,
+                    wins,
                     decreasing = TRUE)),
             div_order_ppwl = order(
                 order(
                     point_percent_wl,
-                    total_wins,
+                    wins,
                     decreasing = TRUE)),
             playoff_pp2 = if_else(div_order_pp2 <= 12, "yes", "no"),
             playoff_pp3 = if_else(div_order_pp3 <= 12, "yes", "no"),
@@ -456,7 +462,8 @@ playoff_table_select_19_20 <- function(df_in,
                                        points_field,
                                        pp_field,
                                        playoff_field,
-                                       year_filter = "20_21") {
+                                       year_filter = "20_21",
+                                       wins_col) {
 
     df_out <- df_in %>%
         select(
@@ -474,7 +481,7 @@ playoff_table_select_19_20 <- function(df_in,
         arrange(
             group,
             desc(!!pp_field),
-            desc(wins)) %>%
+            desc(!!wins_col)) %>%
         rename(
             "Group" = group,
             "Wins" = wins,
@@ -584,7 +591,8 @@ standings_19_20 %>%
     playoff_table_select_19_20(
         quo(points_2),
         quo(point_percent_2),
-        quo(playoff_pp2)) %>%
+        quo(playoff_pp2),
+        quo(total_wins)) %>%
     playoff_table_kable_19_20()
 
 ```
@@ -598,7 +606,8 @@ standings_19_20 %>%
     playoff_table_select_19_20(
         quo(points_3),
         quo(point_percent_3),
-        quo(playoff_pp3)) %>%
+        quo(playoff_pp3),
+        quo(wins)) %>%
     playoff_table_kable_19_20()
 
 ```
@@ -612,7 +621,8 @@ standings_19_20 %>%
     playoff_table_select_19_20(
         quo(points_win_loss),
         quo(point_percent_wl),
-        quo(playoff_ppwl)) %>%
+        quo(playoff_ppwl),
+        quo(total_wins)) %>%
     playoff_table_kable_19_20()
 ```
 
@@ -845,6 +855,7 @@ wild_card_14_19 %>%
     playoff_table_select(
         quo(points_2),
         quo(playoff_p2),
+        quo(total_wins),
         year_filter = "18_19") %>%
     playoff_table_kable_14_19()
 
@@ -900,6 +911,7 @@ wild_card_14_19 %>%
     playoff_table_select(
         quo(points_2),
         quo(playoff_p2),
+        quo(total_wins),
         year_filter = "17_18") %>%
     playoff_table_kable_14_19()
 
@@ -952,6 +964,7 @@ wild_card_14_19 %>%
     playoff_table_select(
         quo(points_2),
         quo(playoff_p2),
+        quo(total_wins),
         year_filter = "16_17") %>%
     playoff_table_kable_14_19()
 
@@ -1003,6 +1016,7 @@ wild_card_14_19 %>%
     playoff_table_select(
         quo(points_2),
         quo(playoff_p2),
+        quo(total_wins),
         year_filter = "15_16") %>%
     playoff_table_kable_14_19()
 
@@ -1055,6 +1069,7 @@ wild_card_14_19 %>%
     playoff_table_select(
         quo(points_2),
         quo(playoff_p2),
+        quo(total_wins),
         year_filter = "14_15") %>%
     playoff_table_kable_14_19()
 
@@ -1106,6 +1121,7 @@ wild_card_14_19 %>%
     playoff_table_select(
         quo(points_2),
         quo(playoff_p2),
+        quo(total_wins),
         year_filter = "13_14") %>%
     playoff_table_kable_14_19()
 
@@ -1372,6 +1388,7 @@ standings_05_13 %>%
     playoff_table_select(
         quo(points_2),
         quo(playoff_p2),
+        quo(total_wins),
         year_filter = "12_13") %>%
     playoff_table_kable_05_13()
 
@@ -1426,6 +1443,7 @@ standings_05_13 %>%
     playoff_table_select(
         quo(points_2),
         quo(playoff_p2),
+        quo(total_wins),
         year_filter = "11_12") %>%
     playoff_table_kable_05_13()
 
@@ -1477,6 +1495,7 @@ standings_05_13 %>%
     playoff_table_select(
         quo(points_2),
         quo(playoff_p2),
+        quo(total_wins),
         year_filter = "10_11") %>%
     playoff_table_kable_05_13()
 
@@ -1528,6 +1547,7 @@ standings_05_13 %>%
     playoff_table_select(
         quo(points_2),
         quo(playoff_p2),
+        quo(total_wins),
         year_filter = "09_10") %>%
     playoff_table_kable_05_13()
 
@@ -1579,6 +1599,7 @@ standings_05_13 %>%
     playoff_table_select(
         quo(points_2),
         quo(playoff_p2),
+        quo(total_wins),
         year_filter = "08_09") %>%
     playoff_table_kable_05_13()
 
@@ -1630,6 +1651,7 @@ standings_05_13 %>%
     playoff_table_select(
         quo(points_2),
         quo(playoff_p2),
+        quo(total_wins),
         year_filter = "07_08") %>%
     playoff_table_kable_05_13()
 
@@ -1680,6 +1702,7 @@ standings_05_13 %>%
     playoff_table_select(
         quo(points_2),
         quo(playoff_p2),
+        quo(total_wins),
         year_filter = "06_07") %>%
     playoff_table_kable_05_13()
 
@@ -1731,6 +1754,7 @@ standings_05_13 %>%
     playoff_table_select(
         quo(points_2),
         quo(playoff_p2),
+        quo(total_wins),
         year_filter = "05_06") %>%
     playoff_table_kable_05_13()
 
