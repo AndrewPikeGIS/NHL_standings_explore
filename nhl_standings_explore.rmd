@@ -661,12 +661,12 @@ set_2014_2019_div_seeding <- function(df_in) {
             div_order_p3 = order(
                 order(
                     points_3,
-                    total_wins,
+                    wins,
                     decreasing = TRUE)),
             div_order_win_loss = order(
                 order(
                     points_win_loss,
-                    total_wins,
+                    wins,
                     decreasing = TRUE)),
             playoff_p2 = if_else(div_order_p2 <= 3, "yes", "no"),
             playoff_p3 = if_else(div_order_p3 <= 3, "yes", "no"),
@@ -678,7 +678,8 @@ set_2014_2019_div_seeding <- function(df_in) {
 
 set_2014_2019_conf_seeding <- function(df_in,
                                        filter_col,
-                                       points_col) {
+                                       points_col,
+                                       wins_col) {
     div_winners_out <- df_in %>%
         filter(
             group_level == "conf" &
@@ -699,7 +700,7 @@ set_2014_2019_conf_seeding <- function(df_in,
             conf_order = order(
                 order(
                     !!points_col,
-                    total_wins,
+                    !!wins_col,
                     decreasing = TRUE)),
             playoff_col = if_else(conf_order <= 2, "yes", "no"),
         ) %>%
@@ -726,19 +727,22 @@ standings_2014_19_w_div_po <- merge(
 conf_p2_playoff_14_19 <- set_2014_2019_conf_seeding(
     standings_2014_19_w_div_po,
     quo(playoff_p2),
-    quo(points_2)
+    quo(points_2),
+    quo(total_wins)
 )
 
 conf_p3_playoff_14_19 <- set_2014_2019_conf_seeding(
     standings_2014_19_w_div_po,
     quo(playoff_p3),
-    quo(points_3)
+    quo(points_3),
+    quo(wins)
 )
 
 conf_wl_playoff_14_19 <- set_2014_2019_conf_seeding(
     standings_2014_19_w_div_po,
     quo(playoff_win_loss),
-    quo(points_win_loss)
+    quo(points_win_loss),
+    quo(wins)
 )
 
 div_p2_playoff_14_19 <- div_playoff_2014_19 %>%
@@ -1177,12 +1181,12 @@ set_2005_2013_div_seeding <- function(df_in) {
             div_order_p3 = order(
                 order(
                     points_3,
-                    total_wins,
+                    wins,
                     decreasing = TRUE)),
             div_order_win_loss = order(
                 order(
                     points_win_loss,
-                    total_wins,
+                    wins,
                     decreasing = TRUE)),
             playoff_p2 = if_else(div_order_p2 == 1, "yes", "no"),
             playoff_p3 = if_else(div_order_p3 == 1, "yes", "no"),
@@ -1194,7 +1198,8 @@ set_2005_2013_div_seeding <- function(df_in) {
 
 set_2005_2013_conf_seeding <- function(df_in,
                                        filter_col,
-                                       points_col) {
+                                       points_col,
+                                       wins_col) {
     div_winners_out <- df_in %>%
         filter(
             group_level == "conf" &
@@ -1217,7 +1222,7 @@ set_2005_2013_conf_seeding <- function(df_in,
             conf_order = order(
                 order(
                     !!points_col,
-                    total_wins,
+                    !!wins_col,
                     decreasing = TRUE)),
             playoff_col = if_else(conf_order <= 5, "yes", "no"),
         ) %>%
@@ -1244,19 +1249,22 @@ standings_2005_13_w_div_po <- merge(
 conf_p2_playoff_05_13 <- set_2005_2013_conf_seeding(
     standings_2005_13_w_div_po,
     quo(playoff_p2),
-    quo(points_2)
+    quo(points_2),
+    quo(total_wins)
 )
 
 conf_p3_playoff_05_13 <- set_2005_2013_conf_seeding(
     standings_2005_13_w_div_po,
     quo(playoff_p3),
-    quo(points_3)
+    quo(points_3),
+    quo(wins)
 )
 
 conf_wl_playoff_05_13 <- set_2005_2013_conf_seeding(
     standings_2005_13_w_div_po,
     quo(playoff_win_loss),
-    quo(points_win_loss)
+    quo(points_win_loss),
+    quo(wins)
 )
 
 div_p2_playoff_05_13 <- div_playoff_2005_13 %>%
