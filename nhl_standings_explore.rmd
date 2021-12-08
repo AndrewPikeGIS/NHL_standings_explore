@@ -464,8 +464,7 @@ playoff_table_select_19_20 <- function(df_in,
                                        points_field,
                                        pp_field,
                                        playoff_field,
-                                       year_filter = "20_21",
-                                       wins_col) {
+                                       wins_col = quo(wins)) {
 
     df_out <- df_in %>%
         select(
@@ -608,8 +607,7 @@ standings_19_20 %>%
     playoff_table_select_19_20(
         quo(points_3),
         quo(point_percent_3),
-        quo(playoff_pp3),
-        quo(wins)) %>%
+        quo(playoff_pp3)) %>%
     playoff_table_kable_19_20()
 
 ```
@@ -623,8 +621,7 @@ standings_19_20 %>%
     playoff_table_select_19_20(
         quo(points_win_loss),
         quo(point_percent_wl),
-        quo(playoff_ppwl),
-        quo(wins)) %>%
+        quo(playoff_ppwl)) %>%
     playoff_table_kable_19_20()
 ```
 
