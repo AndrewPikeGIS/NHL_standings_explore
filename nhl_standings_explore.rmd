@@ -394,7 +394,9 @@ standings_20_21 %>%
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 standings_20_21 %>%
-    playoff_table_select(quo(points_win_loss), quo(playoff_win_loss)) %>%
+    playoff_table_select(
+        quo(points_win_loss),
+        quo(playoff_win_loss)) %>%
     playoff_table_kable_20_21()
 ```
 
@@ -622,7 +624,7 @@ standings_19_20 %>%
         quo(points_win_loss),
         quo(point_percent_wl),
         quo(playoff_ppwl),
-        quo(total_wins)) %>%
+        quo(wins)) %>%
     playoff_table_kable_19_20()
 ```
 
